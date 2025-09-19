@@ -251,7 +251,7 @@ const Contact: React.FC = () => {
                 className="text-sm sm:text-base lg:text-lg text-gray-200 mb-8 leading-relaxed max-w-2xl drop-shadow-md"
 
               >
-               At Oasis Marine trading L.L.C we specialize in providing top-quality oil marine equipment to support your maritime operations. With a focus on reliability and performance, we offer a comprehensive range of high-pressure fittings, pumps, valves, and more. Serving the UAE’s vibrant marine industry, our products are designed to withstand the harshest conditions, ensuring safety and efficiency. Explore our extensive inventory and experience unparalleled service today!
+               At Oasis Marine Trading L.L.C we specialize in providing top-quality oil marine equipment to support your maritime operations. With a focus on reliability and performance, we offer a comprehensive range of high-pressure fittings, pumps, valves, and more. Serving the UAE’s vibrant marine industry, our products are designed to withstand the harshest conditions, ensuring safety and efficiency. Explore our extensive inventory and experience unparalleled service today!
               </motion.p>
             </motion.div>
           </div>
