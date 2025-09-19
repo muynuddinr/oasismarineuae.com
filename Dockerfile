@@ -18,6 +18,9 @@ ENV CLOUDINARY_CLOUD_NAME="build-time-cloud"
 ENV CLOUDINARY_API_KEY="123456789"
 ENV CLOUDINARY_API_SECRET="build-time-secret"
 ENV NEXT_PUBLIC_API_BASE_URL="http://localhost:8085/api"
+ENV NEXTAUTH_URL="https://oasismarineuae.com"
+ENV NEXT_PUBLIC_API_BASE_URL="https://oasismarineuae.com/api"
+
 
 RUN npm run build
 
