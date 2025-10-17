@@ -78,7 +78,7 @@ export default function ProductsPage() {
       // Check admin authentication
       const adminSession = Cookies.get('adminSession');
       const adminUser = Cookies.get('adminUser');
-      setIsAdmin(adminSession === 'true' && adminUser === 'adeeb');
+      setIsAdmin(adminSession === 'true' && adminUser === 'admin@oasismarineuae');
       
       fetchProducts();
       fetchCategories();
