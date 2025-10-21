@@ -183,69 +183,87 @@ const Branch: React.FC = () => {
         </motion.div>
 
         {/* Content */}
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 w-full">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial="hidden"
-              animate="visible"
+        <div className="relative z-20 w-full flex items-center min-h-screen">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.2,
+                  delayChildren: 0.3,
+                },
+              },
+            }}
+            className="text-white px-6 md:px-12 lg:px-16 max-w-4xl lg:max-w-5xl"
+          >
+            {/* Title with Animated Underline */}
+            <div className="relative inline-block mb-6">
+              <motion.h1
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      duration: 0.6,
+                    },
+                  },
+                }}
+                className="text-3xl md:text-5xl lg:text-6xl leading-tight"
+              >
+                Our <span className="">Branch</span>
+              </motion.h1>
+
+              <motion.div
+                variants={{
+                  hidden: {
+                    width: 0,
+                    opacity: 0
+                  },
+                  visible: {
+                    width: "30%",
+                    opacity: 1,
+                    transition: {
+                      delay: 0.8,
+                      duration: 0.8,
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                    },
+                  },
+                }}
+                initial="hidden"
+                animate="visible"
+                className="absolute -bottom-2 left-0 h-1 bg-gray-200 rounded-full shadow-lg"
+                style={{
+                  boxShadow: "0 0 12px rgba(63, 35, 204, 0.5)",
+                }}
+              />
+            </div>
+
+            <motion.p
               variants={{
-                hidden: { opacity: 0 },
+                hidden: { opacity: 0, y: 20 },
                 visible: {
                   opacity: 1,
+                  y: 0,
                   transition: {
-                    staggerChildren: 0.3,
-                    delayChildren: 0.4,
-                    ease: "easeOut",
-                    duration: 0.8,
+                    duration: 0.6,
                   },
                 },
               }}
-              className="text-white"
+              className="text-base md:text-lg lg:text-xl text-gray-200 mb-8 leading-relaxed drop-shadow-md"
+              style={{
+                fontSize: "18px",
+                lineHeight: "1.75",
+                maxWidth: "none",
+              }}
             >
-              <motion.h1
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      duration: 1,
-                      ease: [0.22, 1, 0.36, 1],
-                    },
-                  },
-                }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-light mb-8 leading-tight"
-              >
-                Our <span className="text-[#3f23cc] drop-shadow-lg">Branch</span>
-              </motion.h1>
-
-              {/* Underline animation (added) */}
-              <motion.div
-                variants={underlineVariants}
-                initial="hidden"
-                animate={bannerInView ? "visible" : "hidden"}
-                className="h-1 bg-[#3f23cc] mb-8 rounded-full"
-              />
-
-              <motion.p
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      duration: 1,
-                      ease: [0.22, 1, 0.36, 1],
-                    },
-                  },
-                }}
-                className="text-sm sm:text-base lg:text-lg text-gray-200 mb-8 leading-relaxed max-w-2xl drop-shadow-md"
-              >
-                Empowering innovation, education, and digital transformation
-                across all our branches.
-              </motion.p>
-            </motion.div>
-          </div>
+              Empowering innovation, education, and digital transformation
+              across all our branches.
+            </motion.p>
+          </motion.div>
         </div>
 
         {/* Scroll indicator */}
