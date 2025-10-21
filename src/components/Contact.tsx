@@ -1,3 +1,4 @@
+
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
@@ -149,23 +150,51 @@ const Contact: React.FC = () => {
     },
   };
 
-  // Underline animation variants
-  const underlineVariants: Variants = {
-    hidden: { width: 0 },
+  // Animation variants matching Banner.tsx
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+      },
+    },
+  };
+
+  // Underline animation variants matching Banner.tsx
+  const underlineVariants = {
+    hidden: {
+      width: 0,
+      opacity: 0
+    },
     visible: {
       width: "30%",
+      opacity: 1,
       transition: {
+        delay: 0.8,
         duration: 0.8,
-        ease: [0.22, 1, 0.36, 1],
-        delay: 0.5,
+        ease: [0.25, 0.46, 0.45, 0.94],
       },
     },
   };
 
   return (
     <>
-      {/* Banner Section */}
+      {/* Banner Section - Updated to match Banner.tsx style */}
       <section
+        ref={bannerRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
         aria-label="About Oasis Marine UAE"
       >
@@ -184,8 +213,8 @@ const Contact: React.FC = () => {
             />
           </div>
 
-          {/* Gradient overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900/70 via-gray-800/50 to-gray-700/60"></div>
+          {/* Dark overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
         {/* Animated background elements */}
@@ -209,73 +238,46 @@ const Contact: React.FC = () => {
           />
         </motion.div>
 
-        {/* Content */}
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 w-full">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: {
-                    staggerChildren: 0.3,
-                    delayChildren: 0.4,
-                    ease: "easeOut",
-                    duration: 0.8,
-                  },
-                },
-              }}
-              className="text-white"
-            >
+        {/* Banner Content - Left aligned matching Banner.tsx */}
+        <div className="absolute inset-0 flex items-center z-20">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+            className="text-white px-6 md:px-12 lg:px-16 max-w-4xl lg:max-w-5xl"
+          >
+            {/* Title with Animated Underline */}
+            <div className="relative inline-block mb-6">
               <motion.h1
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      duration: 1,
-                      ease: [0.22, 1, 0.36, 1],
-                    },
-                  },
-                }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-light mb-8 leading-tight"
+                variants={itemVariants}
+                className="text-3xl md:text-5xl lg:text-6xl leading-tight"
               >
-                Contact Oasis{" "}
-                <span className="text-[#3f23cc] drop-shadow-lg">
-                  Marine UAE
-                </span>
+                Contact Oasis Marine UAE
               </motion.h1>
 
-              {/* Underline Animation */}
               <motion.div
                 variants={underlineVariants}
                 initial="hidden"
                 animate="visible"
-               className="h-1 bg-[#3f23cc] mb-8 rounded-full"
-
-              />
-
-              <motion.p
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      duration: 1,
-                      ease: [0.22, 1, 0.36, 1],
-                    },
-                  },
+                className="absolute -bottom-2 left-0 h-1 bg-gray-200 rounded-full shadow-lg"
+                style={{
+                  boxShadow: "0 0 12px rgba(63, 35, 204, 0.5)",
                 }}
-                className="text-sm sm:text-base lg:text-lg text-gray-200 mb-8 leading-relaxed max-w-2xl drop-shadow-md"
-              >
-               At Oasis Marine trading L.L.C we specialize in providing top-quality oil marine equipment to support your maritime operations. With a focus on reliability and performance, we offer a comprehensive range of high-pressure fittings, pumps, valves, and more. Serving the UAE's vibrant marine industry, our products are designed to withstand the harshest conditions, ensuring safety and efficiency. Explore our extensive inventory and experience unparalleled service today!
-              </motion.p>
-            </motion.div>
-          </div>
+              />
+            </div>
+
+            <motion.p
+              variants={itemVariants}
+              className="text-base md:text-lg lg:text-xl text-gray-200 mb-8 leading-relaxed drop-shadow-md"
+              style={{
+                fontSize: "18px",
+                lineHeight: "1.75",
+                maxWidth: "none",
+              }}
+            >
+            Oasis Marine Trading L.L.C supplies durable, high-performance marine equipment—pumps, valves, fittings, hoses, and connectors—built for safety, efficiency, and reliability.
+            </motion.p>
+          </motion.div>
         </div>
 
         {/* Scroll indicator */}
@@ -286,11 +288,11 @@ const Contact: React.FC = () => {
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
         >
           <div className="animate-bounce flex flex-col items-center">
-            <span className="text-sm text-gray-300 mb-2 drop-shadow-md">
+            <span className="text-sm text-blue-200 mb-2 drop-shadow-md">
               Scroll down
             </span>
             <svg
-              className="w-6 h-6 text-gray-300 drop-shadow-md"
+              className="w-6 h-6 text-blue-200 drop-shadow-md"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -338,21 +340,16 @@ const Contact: React.FC = () => {
                   Do You Have Any{" "}
                   <span className="text-[#3f23cc]">Questions?</span>
                 </h2>
-                
-                {/* Underline Animation */}
-                
 
                 <p className="text-lg text-gray-600 leading-relaxed max-w-lg">
-                  For inquiries about our extensive range of products including
-                  carbon and stainless steel pipes, flanges, fittings, valves,
-                  plates, gaskets, fasteners, and more, contact Fitting World
-                  Trading LLC.
+                  For inquiries about our wide range of products — including carbon and stainless steel pipes, flanges, fittings, valves, plates, gaskets, fasteners, and more — please contact <span className="font-semibold text-gray-800">Oasis Marine Trading L.L.C</span>. We're committed to providing reliable and high-quality industrial solutions.
                 </p>
+
               </motion.div>
 
               <motion.div variants={fadeInUpVariants} className="space-y-6">
                 {/* Email 1 */}
-                <div 
+                <div
                   className="flex items-center space-x-4 group cursor-pointer"
                   onClick={handleEmailClick}
                 >
@@ -367,14 +364,14 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-gray-800 font-medium text-lg">
-                     sales@oasismarineuae.com
+                      sales@oasismarineuae.com
                     </p>
                     <p className="text-gray-500">Email address</p>
                   </div>
                 </div>
 
                 {/* Email 2 */}
-                <div 
+                <div
                   className="flex items-center space-x-4 group cursor-pointer"
                   onClick={() => window.open("mailto:oasismarinegrp@gmail.com")}
                 >
@@ -389,14 +386,14 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-gray-800 font-medium text-lg">
-                     oasismarinegrp@gmail.com
+                      oasismarinegrp@gmail.com
                     </p>
                     <p className="text-gray-500">Email address</p>
                   </div>
                 </div>
 
                 {/* Phone 1 */}
-                <div 
+                <div
                   className="flex items-center space-x-4 group cursor-pointer"
                   onClick={handlePhoneCall}
                 >
@@ -424,7 +421,7 @@ const Contact: React.FC = () => {
                 </div>
 
                 {/* Phone 2 - LAN LINE */}
-                <div 
+                <div
                   className="flex items-center space-x-4 group cursor-pointer"
                   onClick={() => window.open("tel:+97148927427")}
                 >
@@ -452,7 +449,7 @@ const Contact: React.FC = () => {
                 </div>
 
                 {/* Address */}
-                <div 
+                <div
                   className="flex items-start space-x-4 group cursor-pointer"
                   onClick={handleLocationClick}
                 >
@@ -479,7 +476,7 @@ const Contact: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-gray-800 font-medium text-lg leading-relaxed">
-                    5 - Street 2 11th St - Al Qusais - Dubai - United Arab Emirates
+                      5 - Street 2 11th St - Al Qusais - Dubai - United Arab Emirates
                     </p>
                     <p className="text-gray-500">Office address</p>
                   </div>
@@ -572,7 +569,7 @@ const Contact: React.FC = () => {
                     className="w-full px-4 py-3 border border-gray-300 focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all duration-200 bg-gray-50 hover:bg-white resize-vertical"
                     placeholder="Tell us more about your inquiry..."
                   />
-                </div>                        
+                </div>
                 {/* Submit Button */}
                 <div className="flex justify-center">
                   <motion.button
@@ -585,15 +582,14 @@ const Contact: React.FC = () => {
                     }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                    className={`py-3 px-8 font-medium text-white border-2 border-transparent ${
-                      isSubmitting
+                    className={`py-3 px-8 font-medium text-white border-2 border-transparent ${isSubmitting
                         ? "bg-blue-700 cursor-not-allowed"
                         : submitStatus === "success"
-                        ? "bg-emerald-600"
-                        : submitStatus === "error"
-                        ? "bg-red-600"
-                        : "bg-blue-900"
-                    }`}
+                          ? "bg-emerald-600"
+                          : submitStatus === "error"
+                            ? "bg-red-600"
+                            : "bg-blue-900"
+                      }`}
                   >
                     <div className="flex items-center justify-center">
                       {isSubmitting ? (
@@ -687,7 +683,8 @@ const Contact: React.FC = () => {
           </div>
         </div>
       </section>
-       <section className="bg-white w-full">
+
+      <section className="bg-white w-full">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -702,7 +699,7 @@ const Contact: React.FC = () => {
             className="w-full h-[600px] relative"
           >
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d6089481.187286434!2d55.383382!3d25.286978!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f5de30e5a6283%3A0x14805290c4c15df6!2sOasis%20Marine%20Trading%20LLC!5e1!3m2!1sen!2sus!4v1756716453086!5m2!1sen!2sus" 
+              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d6089481.187286434!2d55.383382!3d25.286978!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f5de30e5a6283%3A0x14805290c4c15df6!2sOasis%20Marine%20Trading%20LLC!5e1!3m2!1sen!2sus!4v1756716453086!5m2!1sen!2sus"
               width="100%"
               height="100%"
               style={{ border: 0 }}

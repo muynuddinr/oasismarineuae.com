@@ -9,40 +9,48 @@ export default function Banner() {
   const [direction, setDirection] = useState(0);
 
   // Array of banner images with descriptions and links
-  const banners = [
-    {
-      image: "/banner/Contact.jpg",
-      title: 'Contact <span class="text-[#3f23cc]">Us</span>',
-      highlight: "Get In Touch",
-      description: "Reach out for quotes, support, or inquiries. Our expert team is here to help you find the right marine and industrial supplies.",
-      cta: "Contact Now",
-      ctaLink: "/contact",
-    },
-    {
-      image: "/banner/About.jpg",
-      title: 'About <span class="text-[#3f23cc]">Us</span>',
-      highlight: "Excellence Since 2023",
-      description: "Founded in 2023, we deliver high-quality marine & oilfield equipment across UAE & Middle East, driven by innovation, quality & customer service.",
-      cta: "Learn More",
-      ctaLink: "/about",
-    },
-    {
-      image: "/banner/Our Products.jpg",
-      title: 'Our <span class="text-[#3f23cc]">Products</span>',
-      highlight: "Premium Equipment",
-      description: "Valves, fittings, flanges, rubber & gasket sheets, clamps, hoses + more — all engineered for durability & performance in demanding environments.",
-      cta: "Browse Products",
-      ctaLink: "/products",
-    },
-    {
-      image: "/banner/Branches.jpg",
-      title: 'Our <span class="text-[#3f23cc]">Branches</span>',
-      highlight: "Serving You Better",
-      description: "Serving multiple locations with efficient distribution, quick response & in-person support so you can count on local presence & reliability.",
-      cta: "Find Location",
-      ctaLink: "/branch",
-    },
-  ];
+  // Professional Landing Banner Data
+// Professional Landing Banner Data (with original images)
+// Professional Landing Banner Data (with original images)
+const banners = [
+  {
+    image: "/banner/Contact.jpg",
+    title: 'Reliable Marine & Industrial Solutions',
+    highlight: "Trusted Partner Since 2023",
+    description:
+      "Delivering high-performance marine and oilfield equipment built for strength, precision, and durability. Empowering industries across the UAE and beyond with innovative supply solutions.",
+    cta: "Explore Our Solutions",
+    ctaLink: "/products",
+  },
+  {
+    image: "/banner/About.jpg",
+    title: 'Engineered for Performance',
+    highlight: "Innovation That Drives Success",
+    description:
+      "Our advanced product range and commitment to quality ensure unmatched reliability in the toughest marine and industrial environments.",
+    cta: "Discover Innovation",
+    ctaLink: "/innovation",
+  },
+  {
+    image: "/banner/Our Products.jpg",
+    title: 'Driven by Excellence',
+    highlight: "Precision. Durability. Trust.",
+    description:
+      "From valves and flanges to hoses and fittings, our solutions deliver top-tier performance for industrial and marine applications.",
+    cta: "View Products",
+    ctaLink: "/products",
+  },
+  {
+    image: "/banner/Branches.jpg",
+    title: 'Connecting Industries Worldwide',
+    highlight: "Global Reach. Local Expertise.",
+    description:
+      "With a strong distribution network and dedicated customer support, we ensure seamless supply and responsive service across regions.",
+    cta: "Explore Network",
+    ctaLink: "/network",
+  },
+];
+
 
   // Auto-rotate images every 5 seconds
   useEffect(() => {
@@ -125,7 +133,7 @@ export default function Banner() {
   };
 
   return (
-    <div className="w-full relative">
+    <div className="w-full relative banner">
       {/* Banner Container - Full screen height */}
       <div className="relative w-full h-screen mt-4 min-h-[600px] overflow-hidden">
         <AnimatePresence custom={direction} initial={false}>
@@ -157,21 +165,21 @@ export default function Banner() {
                 initial="hidden"
                 animate="visible"
                 variants={containerVariants}
-                className="text-white px-8 md:px-12 lg:px-24 max-w-2xl"
+                className="text-white px-6 md:px-12 lg:px-16 max-w-4xl lg:max-w-5xl"
               >
                 {/* Title with Animated Underline */}
                 <div className="relative inline-block mb-6">
                   <motion.h1
                     variants={itemVariants}
-                    className="text-4xl md:text-5xl lg:text-6xl  leading-tight"
+                    className="text-3xl md:text-5xl lg:text-6xl  leading-tight"
                     dangerouslySetInnerHTML={{ __html: banners[currentImageIndex].title }}
                   />
-                 
+
                   <motion.div
                     variants={underlineVariants}
                     initial="hidden"
                     animate="visible"
-                    className="absolute -bottom-2 left-0 h-1 bg-[#3f23cc] rounded-full shadow-lg"
+                    className="absolute -bottom-2 left-0 h-1 bg-gray-200 rounded-full shadow-lg"
                     style={{
                       boxShadow: "0 0 12px rgba(63, 35, 204, 0.5)",
                     }}
@@ -180,7 +188,7 @@ export default function Banner() {
 
                 <motion.p
                   variants={itemVariants}
-                  className="text-lg md:text-xl lg:text-2xl mb-8 font-light tracking-wide opacity-90 max-w-xl"
+                  className="text-base md:text-lg lg:text-xl text-gray-200 mb-8 leading-relaxed drop-shadow-md"
                 >
                   {banners[currentImageIndex].description}
                 </motion.p>
@@ -193,11 +201,10 @@ export default function Banner() {
             <button
               key={index}
               onClick={() => handleIndicatorClick(index)}
-              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                index === currentImageIndex
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${index === currentImageIndex
                   ? "bg-white scale-110"
                   : "bg-white/50"
-              } ${clickedIndex === index ? "scale-125" : ""}`}
+                } ${clickedIndex === index ? "scale-125" : ""}`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
@@ -205,7 +212,18 @@ export default function Banner() {
       </div>
 
       {/* Custom Styles */}
-      
+      <style jsx global>{`
+        .banner p {
+          font-size: 18px; /* a little bigger */
+          line-height: 1.75;
+          margin: 0;
+          max-width: none;
+          display: block;
+          overflow: visible;
+          text-overflow: clip;
+          max-height: none;
+        }
+      `}</style>
     </div>
   );
 }

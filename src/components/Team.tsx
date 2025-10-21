@@ -7,6 +7,7 @@ import Image from "next/image";
 import Banner from "../app/assets/banner/About Us.jpg";
 import Boat from "../app/assets/boat/boat.png";
 import About from "../app/assets/boat/About.png";
+
 const Team = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -144,18 +145,49 @@ const Team = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Underline animation variant
-  const underlineVariants: Variants = {
-    hidden: { width: 0 },
+  // Animation variants matching Banner.tsx
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+      },
+    },
+  };
+
+  // Underline animation variants matching Banner.tsx
+  const underlineVariants = {
+    hidden: {
+      width: 0,
+      opacity: 0
+    },
     visible: {
       width: "30%",
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.4 },
+      opacity: 1,
+      transition: {
+        delay: 0.8,
+        duration: 0.8,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      },
     },
   };
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
-      {/* Banner Section from slug1 */}
+      {/* Banner Section - Updated to match Banner.tsx style */}
       <section
         ref={bannerRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
@@ -176,8 +208,8 @@ const Team = () => {
             />
           </div>
 
-          {/* Gradient overlay for better text readability */}
-          <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-cyan-900/60"></div>
+          {/* Dark overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/40"></div>
         </div>
 
         {/* Animated background elements */}
@@ -201,70 +233,47 @@ const Team = () => {
           />
         </motion.div>
 
-        {/* Content */}
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 w-full">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={{
-                hidden: { opacity: 0 },
-                visible: {
-                  opacity: 1,
-                  transition: {
-                    staggerChildren: 0.3,
-                    delayChildren: 0.4,
-                    ease: "easeOut",
-                    duration: 0.8,
-                  },
-                },
-              }}
-              className="text-white"
-            >
+        {/* Banner Content - Left aligned matching Banner.tsx */}
+        <div className="absolute inset-0 flex items-center z-20">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+            className="text-white px-6 md:px-12 lg:px-16 max-w-4xl lg:max-w-5xl"
+          >
+            {/* Title with Animated Underline */}
+            <div className="relative inline-block mb-6">
               <motion.h1
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      duration: 1,
-                      ease: [0.22, 1, 0.36, 1],
-                    },
-                  },
-                }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-light mb-6 leading-tight"
+                variants={itemVariants}
+                className="text-3xl md:text-5xl lg:text-6xl leading-tight"
               >
-                About <span className="text-[#3f23cc] drop-shadow-lg">Us</span>
+                About Us
               </motion.h1>
 
-              {/* Underline animation */}
               <motion.div
                 variants={underlineVariants}
                 initial="hidden"
-                animate={bannerInView ? "visible" : "hidden"}
-                className="h-1 bg-[#3f23cc] mb-6 rounded-full max-w-[30%]"
-              />
-
-              <motion.p
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: {
-                      duration: 1,
-                      ease: [0.22, 1, 0.36, 1],
-                    },
-                  },
+                animate="visible"
+                className="absolute -bottom-2 left-0 h-1 bg-gray-200 rounded-full shadow-lg"
+                style={{
+                  boxShadow: "0 0 12px rgba(63, 35, 204, 0.5)",
                 }}
-                className="text-sm sm:text-base lg:text-lg text-gray-200 mb-8 leading-relaxed max-w-2xl drop-shadow-md"
-              >
-                We are a team of dedicated professionals driven by a passion for
-                success and innovation.
-              </motion.p>
-            </motion.div>
-          </div>
+              />
+            </div>
+
+            <motion.p
+              variants={itemVariants}
+              className="text-base md:text-lg lg:text-xl text-gray-200 mb-8 leading-relaxed drop-shadow-md"
+              style={{
+                fontSize: "18px",
+                lineHeight: "1.75",
+                maxWidth: "none",
+              }}
+            >
+              We are a team of dedicated professionals driven by a passion for
+              success and innovation.
+            </motion.p>
+          </motion.div>
         </div>
 
         {/* Scroll indicator */}
@@ -275,11 +284,11 @@ const Team = () => {
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
         >
           <div className="animate-bounce flex flex-col items-center">
-            <span className="text-sm text-gray-200 mb-2 drop-shadow-md">
+            <span className="text-sm text-blue-200 mb-2 drop-shadow-md">
               Scroll down
             </span>
             <svg
-              className="w-6 h-6 text-gray-200 drop-shadow-md"
+              className="w-6 h-6 text-blue-200 drop-shadow-md"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -400,7 +409,6 @@ const Team = () => {
               viewport={{ once: true, amount: 0.3 }}
               className="relative overflow-hidden rounded-2xl shadow-xl"
             >
-              {/* Using a high-quality marine equipment image from Unsplash */}
               <img
                 src={About.src}
                 alt="Marine and Oilfield Equipment"
@@ -530,6 +538,7 @@ const Team = () => {
           </p>
         </motion.div>
       </section>
+
       <section className="max-w-7xl mx-auto px-4 sm:px-6  py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -628,7 +637,7 @@ const Team = () => {
               </div>
             </motion.div>
 
-            {/* Image Section - Made smaller with border */}
+            {/* Image Section */}
             <motion.div
               initial={{ opacity: 0, x: 30, scale: 0.95 }}
               whileInView={{ opacity: 1, x: 0, scale: 1 }}
@@ -636,7 +645,7 @@ const Team = () => {
               viewport={{ once: true, amount: 0.3 }}
               className="flex-1 flex items-center justify-center p-8 lg:p-12"
             >
-              <div className="relative w-full h-64 lg:h-80 overflow-hidden rounded-xl   shadow-xl">
+              <div className="relative w-full h-64 lg:h-80 overflow-hidden rounded-xl shadow-xl">
                 <Image
                   src={Boat}
                   alt="Container ship on blue ocean waters"
@@ -649,7 +658,7 @@ const Team = () => {
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 to-cyan-700/5"></div>
 
                 {/* Decorative border elements */}
-                <div className="absolute top-2 left-2 right-2 bottom-2  rounded-lg pointer-events-none"></div>
+                <div className="absolute top-2 left-2 right-2 bottom-2 rounded-lg pointer-events-none"></div>
               </div>
             </motion.div>
           </div>
