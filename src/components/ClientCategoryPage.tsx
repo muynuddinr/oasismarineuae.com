@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Banner from "../app/assets/banner/banner.png";
+import { Variants } from "framer-motion";
 import {
   ArrowLeftIcon,
   FunnelIcon,
@@ -67,6 +68,21 @@ const containerVariants = {
     },
   },
 };
+const underlineVariants:Variants = {
+    hidden: {
+      width: 0,
+      opacity: 0
+    },
+    visible: {
+      width: "30%",
+      opacity: 1,
+      transition: {
+        delay: 0.8,
+        duration: 0.8,
+        ease: [0.25, 0.46, 0.45, 0.94],
+      },
+    },
+  };
 
 const itemVariants = {
   hidden: {
@@ -133,6 +149,7 @@ const filterVariants = {
   },
 };
 
+
 export default function ClientCategoryPage({
   params,
 }: {
@@ -151,6 +168,7 @@ export default function ClientCategoryPage({
   const [isFiltersInView, setIsFiltersInView] = useState(false);
   const [isProductsInView, setIsProductsInView] = useState(false);
   const [isCtaInView, setIsCtaInView] = useState(false);
+  const [bannerInView, setBannerInView] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -306,6 +324,15 @@ export default function ClientCategoryPage({
           setIsCtaInView(true);
         }
       }
+
+      // Banner section
+      const bannerSection = document.getElementById("banner-section");
+      if (bannerSection) {
+        const bannerPosition = bannerSection.offsetTop;
+        if (scrollPosition > bannerPosition + 100) {
+          setBannerInView(true);
+        }
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -313,6 +340,26 @@ export default function ClientCategoryPage({
     handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.target.classList.contains("banner-section")) {
+            setBannerInView(entry.isIntersecting);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+
+    const bannerSection = document.querySelector(".banner-section");
+    if (bannerSection) {
+      observer.observe(bannerSection);
+    }
+
+    return () => observer.disconnect();
   }, []);
 
   if (currentSlug === "detail") {
@@ -521,13 +568,26 @@ export default function ClientCategoryPage({
                     },
                   },
                 }}
-                className="text-4xl sm:text-5xl lg:text-6xl font-light mb-8 leading-tight"
+                className="text-4xl sm:text-5xl lg:text-6xl font-light mb-6 leading-tight"
               >
                 Discover{" "}
-                <span className="text-[#3f23cc] drop-shadow-lg">
+                <span className="text-white drop-shadow-lg">
                   {pageInfo.name}
+                   <motion.div
+                    variants={underlineVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className=" -bottom-2 left-0 h-1 bg-gray-200 rounded-full shadow-lg"
+                    style={{
+                      boxShadow: "0 0 12px rgba(63, 35, 204, 0.5)",
+                    }}
+                  />
                 </span>
+                
               </motion.h1>
+
+              {/* Add the underline animation here */}
+             
 
               <motion.p
                 variants={{
