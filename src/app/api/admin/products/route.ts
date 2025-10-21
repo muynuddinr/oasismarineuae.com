@@ -72,16 +72,27 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log('📝 POST /api/admin/products - Creating new product');
+    
     // Check admin authentication
     const isAdmin = await checkAdminAuth();
     if (!isAdmin) {
+      console.log('❌ Unauthorized access attempt');
       return NextResponse.json(
         { error: 'Unauthorized. Admin access required.' },
         { status: 401 }
       );
     }
 
+    console.log('✅ Admin authenticated');
     const body = await request.json();
+    console.log('📦 Request body received:', { 
+      hasName: !!body.name,
+      hasShortDescription: !!body.shortDescription,
+      hasCardImage: !!body.cardImage,
+      hasCategoryId: !!body.categoryId,
+      hasSubcategoryId: !!body.subcategoryId
+    });
     const {
       name,
       shortDescription,
@@ -105,16 +116,29 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate unique slug from product name
+    console.log('🔤 Generating slug from name:', name);
     const baseSlug = generateSlug(name);
+    console.log('📌 Base slug generated:', baseSlug);
     
-    // Get existing slugs to ensure uniqueness
-    const existingProducts = await ProductModel.findMany({});
-    const existingSlugs = existingProducts
-      .map(p => p.slug)
-      .filter((slug): slug is string => slug !== null && slug !== undefined);
+    // Check if slug exists and find a unique one
+    let uniqueSlug = baseSlug;
+    let counter = 1;
+    let slugExists = true;
     
-    const uniqueSlug = generateUniqueSlug(baseSlug, existingSlugs);
+    while (slugExists) {
+      console.log('🔍 Checking if slug exists:', uniqueSlug);
+      const existingProduct = await ProductModel.findBySlug(uniqueSlug);
+      if (!existingProduct) {
+        slugExists = false;
+        console.log('✅ Unique slug found:', uniqueSlug);
+      } else {
+        uniqueSlug = `${baseSlug}-${counter}`;
+        counter++;
+        console.log('⚠️ Slug exists, trying:', uniqueSlug);
+      }
+    }
 
+    console.log('💾 Creating product in database...');
     const product = await ProductModel.create({
       name,
       slug: uniqueSlug,
@@ -133,6 +157,8 @@ export async function POST(request: NextRequest) {
       viewCount: 0
     });
 
+    console.log('✅ Product created successfully:', product._id?.toString());
+
     // Transform product to match frontend expectations
     const { _id, ...productWithoutId } = product;
     const transformedProduct = {
@@ -142,12 +168,24 @@ export async function POST(request: NextRequest) {
       subcategoryId: product.subcategoryId?.toString(),
     };
 
+    console.log('📤 Returning transformed product');
     return NextResponse.json({ product: transformedProduct });
   } catch (error) {
-    console.error('Error creating product:', error);
+    console.error('❌ Error creating product:', error);
+    
+    // Log detailed error information for debugging
+    if (error instanceof Error) {
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+    
     const errorMessage = error instanceof Error ? error.message : 'Failed to create product';
     return NextResponse.json(
-      { error: errorMessage },
+      { 
+        error: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? String(error) : undefined
+      },
       { status: 500 }
     );
   }

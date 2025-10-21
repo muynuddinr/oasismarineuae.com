@@ -27,7 +27,11 @@ export async function connectToDatabase(): Promise<MongoConnection> {
   validateDatabaseUrl();
   
   try {
-    const client = new MongoClient(MONGODB_URI!);
+    const client = new MongoClient(MONGODB_URI!, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+    });
+    
     await client.connect();
     
     const db = client.db(MONGODB_DB);
@@ -38,17 +42,32 @@ export async function connectToDatabase(): Promise<MongoConnection> {
     return cached;
   } catch (error) {
     console.error('❌ Failed to connect to MongoDB:', error);
-    throw error;
+    console.error('Connection string exists:', !!MONGODB_URI);
+    console.error('Database name:', MONGODB_DB);
+    
+    // Clear cache on error to allow retry
+    cached = null;
+    
+    throw new Error(`MongoDB connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
 export async function getCollection(collectionName: string) {
-  const { db } = await connectToDatabase();
-  return db.collection(collectionName);
+  try {
+    const { db } = await connectToDatabase();
+    return db.collection(collectionName);
+  } catch (error) {
+    console.error(`❌ Failed to get collection "${collectionName}":`, error);
+    throw error;
+  }
 }
 
 // Helper function to convert string ID to ObjectId
-export function toObjectId(id: string) {
+export function toObjectId(id: string | null | undefined): ObjectId {
+  if (!id) {
+    throw new Error('Cannot convert null or undefined to ObjectId');
+  }
+  
   try {
     return new ObjectId(id);
   } catch (error) {
