@@ -13,19 +13,36 @@ interface Props {
 // Fetch product by slug to get its ID
 async function fetchProductBySlug(slug: string) {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    // Use absolute URL in production, fallback to localhost in development
+    const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL 
+      ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
+      : 'http://localhost:3000';
+    
+    console.log('Fetching from:', `${baseUrl}/api/products?slug=${slug}`);
+    
     const response = await fetch(`${baseUrl}/api/products?slug=${slug}`, {
       cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
     
     if (!response.ok) {
+      console.error('API Response Error:', response.status, response.statusText);
+      const text = await response.text();
+      console.error('Response body:', text);
       return null;
     }
     
     const products = await response.json();
-    return products.find((p: any) => p.slug === slug) || null;
+    console.log('Products received:', products);
+    
+    const product = products.find((p: any) => p.slug === slug);
+    console.log('Matched product:', product);
+    
+    return product || null;
   } catch (error) {
-    console.error('Error fetching product by slug:', error);
+    console.error('Error in fetchProductBySlug:', error);
     return null;
   }
 }
@@ -68,15 +85,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
   const { productSlug } = params;
   
-  // Fetch the product to get its ID
+  console.log('Fetching product with slug:', productSlug);
   const product = await fetchProductBySlug(productSlug);
   
   if (!product) {
+    console.error('Product not found for slug:', productSlug);
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-800 mb-4">Product Not Found</h1>
           <p className="text-gray-600">The product you're looking for doesn't exist or has been removed.</p>
+          <p className="text-sm text-gray-500 mt-2">Slug: {productSlug}</p>
         </div>
       </div>
     );
