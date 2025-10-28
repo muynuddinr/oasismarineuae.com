@@ -4,23 +4,17 @@ import { useState, useEffect, Fragment, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import ContactModal from "@/components/ContactModal";
 import {
-  HeartIcon,
-  ShareIcon,
   ArrowLeftIcon,
   ChevronRightIcon,
   DocumentArrowDownIcon,
   CheckCircleIcon,
-  DocumentTextIcon,
   ChatBubbleLeftRightIcon,
   TagIcon,
-  TruckIcon,
-  ClockIcon,
   CubeIcon,
 } from "@heroicons/react/24/outline";
-import { StarIcon as StarIconSolid } from "@heroicons/react/24/solid";
-import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import { Tab } from "@headlessui/react";
 import { Dialog, Transition } from "@headlessui/react";
@@ -50,8 +44,18 @@ interface Product {
   cardImage?: string;
   detailImages?: string[];
   shortFeatures?: string[];
-  specifications?: any;
-  reviewsData?: any;
+  specifications?: Record<string, string | number | boolean>;
+  reviewsData?: {
+    rating?: number;
+    count?: number;
+    reviews?: Array<{
+      id: string;
+      rating: number;
+      comment?: string;
+      author?: string;
+      date?: string;
+    }>;
+  };
   catalogFile?: string;
   packaging?: {
     dimensions?: {
@@ -96,8 +100,6 @@ export default function ProductDetailClient({ params }: ProductDetailClientProps
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string>("");
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState("description");
-  const [productId, setProductId] = useState<string>(params.id);
   const [error, setError] = useState<string>("");
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -110,14 +112,12 @@ export default function ProductDetailClient({ params }: ProductDetailClientProps
 
   // Fetch product data
   useEffect(() => {
-    if (productId) {
-      fetchProduct();
-    }
-  }, [productId]);
+    fetchProduct();
+  }, []);
 
   const fetchProduct = async () => {
     try {
-      const response = await fetch(`/api/products/${productId}`);
+      const response = await fetch(`/api/products/${params.id}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -132,7 +132,7 @@ export default function ProductDetailClient({ params }: ProductDetailClientProps
       } else {
         setError("Product not found");
       }
-    } catch (error) {
+    } catch (_err) {
       setError("Failed to load product");
     } finally {
       setLoading(false);
@@ -348,7 +348,7 @@ export default function ProductDetailClient({ params }: ProductDetailClientProps
         addHeading('Technical Specifications', currentY);
         
         const tableData = Object.entries(product.specifications)
-          .filter(([_, value]) => value !== null && value !== undefined && value !== '');
+          .filter(([, value]) => value !== null && value !== undefined && value !== '');
 
         if (tableData.length > 0) {
           // Table styling
@@ -554,11 +554,7 @@ export default function ProductDetailClient({ params }: ProductDetailClientProps
     );
   }
 
-  const releasedDate = new Date(product.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+
 
   return (
     <div className="min-h-screen bg-white">

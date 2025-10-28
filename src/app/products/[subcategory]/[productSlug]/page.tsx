@@ -1,13 +1,13 @@
 import { Metadata } from "next";
 import { Suspense } from "react";
-import ProductDetailClient from "../../../../components/ProductDetailClient";
+import ProductDetailClient from "@/components/ProductDetailClient";
 
 // Force dynamic rendering - no caching
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 interface Props {
-  params: Promise<{ subcategory: string; productSlug: string }>;
+  params: { subcategory: string; productSlug: string };
 }
 
 // Fetch product by slug to get its ID
@@ -31,8 +31,7 @@ async function fetchProductBySlug(slug: string) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const resolvedParams = await params;
-  const { productSlug, subcategory } = resolvedParams;
+  const { productSlug, subcategory } = params;
   
   const product = await fetchProductBySlug(productSlug);
   const productName = product?.name || productSlug
@@ -67,8 +66,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductPage({ params }: Props) {
-  const resolvedParams = await params;
-  const { productSlug } = resolvedParams;
+  const { productSlug } = params;
   
   // Fetch the product to get its ID
   const product = await fetchProductBySlug(productSlug);
