@@ -34,7 +34,7 @@ export default function AdminLoginPage() {
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     // Check credentials
-    if (credentials.username === 'adeeb' && credentials.password === '123') {
+    if (credentials.username === 'admin@oasismarineuae' && credentials.password === 'Admin@uae123') {
       // Create admin session
       Cookies.set('adminSession', 'true', { expires: 1 }); // Expires in 1 day
       Cookies.set('adminUser', credentials.username, { expires: 1 });

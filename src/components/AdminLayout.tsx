@@ -7,7 +7,6 @@ import Cookies from 'js-cookie';
 import { toast, ToastContainer } from 'react-toastify';
 import { 
   MdDashboard, 
-  MdPeople, 
   MdMenu, 
   MdClose, 
   MdLogout,

@@ -1,6 +1,18 @@
 services:
   nextjs:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URL=${DATABASE_URL}
+        - NEXTAUTH_URL=${NEXTAUTH_URL}
+        - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+        - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+        - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+        - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+        - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+        - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+        - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8085/api}
     ports:
       - "8085:8085"
     environment:
@@ -9,6 +21,14 @@ services:
       
       # Database Configuration
       - DATABASE_URL=${DATABASE_URL}
+      
+      # NextAuth Configuration
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      
+      # Google OAuth
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       
       # Cloudinary Configuration
       - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
