@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fire Safety Products Fixer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .results h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .status-box {
+            background: white;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .status-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .status-box p {
+            color: #666;
+            margin: 5px 0;
+            line-height: 1.6;
+        }
+        
+        .product-list {
+            margin-top: 15px;
+        }
+        
+        .product-item {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            margin: 8px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .product-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        
+        .error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Fire Safety Products Fixer</h1>
+        <p class="subtitle">Check and activate inactive Fire Safety products</p>
+        
+        <div class="btn-group">
+            <button onclick="checkStatus()" id="checkBtn">
+                🔍 Check Status
+            </button>
+            <button onclick="activateAll()" id="activateBtn">
+                ✅ Activate All Inactive Products
+            </button>
+        </div>
+        
+        <div id="results"></div>
+    </div>
+    
+    <script>
+        async function checkStatus() {
+            const btn = document.getElementById('checkBtn');
+            const resultsDiv = document.getElementById('results');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Checking...';
+            
+            try {
+                const response = await fetch('/api/admin/check-fire-safety-status');
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '<div class="results">';
+                    html += '<h2>📊 Status Report</h2>';
+                    
+                    // Stats
+                    html += '<div class="stats">';
+                    html += `<div class="stat-card">
+                        <div class="stat-number">${data.summary.total}</div>
+                        <div class="stat-label">Total Products</div>
+                    </div>`;
+                    html += `<div class="stat-card">
+                        <div class="stat-number" style="color: #28a745;">${data.summary.active}</div>
+                        <div class="stat-label">Active</div>
+                    </div>`;
+                    html += `<div class="stat-card">
+                        <div class="stat-number" style="color: #dc3545;">${data.summary.inactive}</div>
+                        <div class="stat-label">Inactive</div>
+                    </div>`;
+                    html += '</div>';
+                    
+                    // Analysis
+                    if (data.summary.inactive > 0) {
+                        html += `<div class="status-box warning">
+                            <h3>⚠️ Issue Found</h3>
+                            <p><strong>${data.summary.inactive} product(s) are INACTIVE</strong></p>
+                            <p>This is why the frontend only shows ${data.summary.active} products instead of ${data.summary.total}.</p>
+                        </div>`;
+                        
+                        // List inactive products
+                        html += '<div class="product-list">';
+                        html += '<h3 style="margin-bottom: 10px;">Inactive Products:</h3>';
+                        data.inactiveProducts.forEach(product => {
+                            html += `<div class="product-item">
+                                <span class="product-name">${product.name}</span>
+                                <span class="badge badge-inactive">INACTIVE</span>
+                            </div>`;
+                        });
+                        html += '</div>';
+                        
+                        html += `<div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px;">
+                            <strong>💡 Solution:</strong> Click the "Activate All Inactive Products" button to fix this issue.
+                        </div>`;
+                    } else {
+                        html += `<div class="status-box success">
+                            <h3>✅ All Products Active</h3>
+                            <p>All ${data.summary.total} Fire Safety products are active and visible on the frontend.</p>
+                        </div>`;
+                    }
+                    
+                    // Show all products
+                    html += '<div style="margin-top: 20px;">';
+                    html += '<h3>All Products:</h3>';
+                    html += '<div class="product-list">';
+                    data.allProducts.forEach(product => {
+                        const badgeClass = product.isActive ? 'badge-active' : 'badge-inactive';
+                        const badgeText = product.isActive ? 'ACTIVE' : 'INACTIVE';
+                        html += `<div class="product-item">
+                            <span class="product-name">${product.name}</span>
+                            <span class="badge ${badgeClass}">${badgeText}</span>
+                        </div>`;
+                    });
+                    html += '</div>';
+                    html += '</div>';
+                    
+                    html += '</div>';
+                    resultsDiv.innerHTML = html;
+                } else {
+                    resultsDiv.innerHTML = `<div class="results">
+                        <div class="status-box error">
+                            <h3>❌ Error</h3>
+                            <p>${data.error}</p>
+                        </div>
+                    </div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="results">
+                    <div class="status-box error">
+                        <h3>❌ Network Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                </div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🔍 Check Status';
+            }
+        }
+        
+        async function activateAll() {
+            const btn = document.getElementById('activateBtn');
+            const resultsDiv = document.getElementById('results');
+            
+            if (!confirm('Are you sure you want to activate all inactive Fire Safety products?')) {
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span>Activating...';
+            
+            try {
+                const response = await fetch('/api/admin/activate-fire-safety-products', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = '<div class="results">';
+                    
+                    if (data.activatedCount > 0) {
+                        html += `<div class="status-box success">
+                            <h3>✅ Success!</h3>
+                            <p><strong>${data.activatedCount} product(s) have been activated</strong></p>
+                            <p>${data.message}</p>
+                        </div>`;
+                        
+                        if (data.activatedProducts) {
+                            html += '<div class="product-list">';
+                            html += '<h3>Activated Products:</h3>';
+                            data.activatedProducts.forEach(product => {
+                                html += `<div class="product-item">
+                                    <span class="product-name">${product.name}</span>
+                                    <span class="badge badge-active">NOW ACTIVE</span>
+                                </div>`;
+                            });
+                            html += '</div>';
+                        }
+                        
+                        html += `<div style="margin-top: 20px; padding: 15px; background: #d4edda; border-radius: 8px;">
+                            <strong>🎉 Next Step:</strong> Refresh the Fire Safety page to see all products:<br>
+                            <a href="http://localhost:3000/products/fire-safety" target="_blank" style="color: #155724; text-decoration: underline;">
+                                http://localhost:3000/products/fire-safety
+                            </a>
+                        </div>`;
+                    } else {
+                        html += `<div class="status-box success">
+                            <h3>✅ ${data.message}</h3>
+                            <p>No changes were needed.</p>
+                        </div>`;
+                    }
+                    
+                    html += '</div>';
+                    resultsDiv.innerHTML = html;
+                    
+                    // Auto-refresh status after 1 second
+                    setTimeout(checkStatus, 1000);
+                } else {
+                    resultsDiv.innerHTML = `<div class="results">
+                        <div class="status-box error">
+                            <h3>❌ Error</h3>
+                            <p>${data.error}</p>
+                        </div>
+                    </div>`;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="results">
+                    <div class="status-box error">
+                        <h3>❌ Network Error</h3>
+                        <p>${error.message}</p>
+                    </div>
+                </div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '✅ Activate All Inactive Products';
+            }
+        }
+        
+        // Auto-check status on page load
+        window.addEventListener('DOMContentLoaded', checkStatus);
+    </script>
+</body>
+</html>
