@@ -7,7 +7,7 @@ import Image from "next/image";
 import Ram from "./Ram";
 import Sam from "./Sam";
 import RAms from "../app/assets/branch/oasisstar-275x300.jpg";
-import Banner from "../app/assets/banner/Our Branches.jpg";
+import Banner from "../app/assets/banner/OurBranch.jpg";
 
 interface HistoryMilestone {
   year: number;

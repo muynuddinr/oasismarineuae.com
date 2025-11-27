@@ -41,7 +41,7 @@ const banners = [
     ctaLink: "/products",
   },
   {
-    image: "/banner/Branches.jpg",
+    image: "/banner/OurBranchs.jpg",
     title: 'Connecting Industries Worldwide',
     highlight: "Global Reach. Local Expertise.",
     description:
