@@ -81,7 +81,7 @@ const itemVariants = {
     scale: 1,
     transition: {
       duration: 0.4,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
 };
@@ -93,7 +93,7 @@ const headerVariants = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
 };
@@ -105,7 +105,7 @@ const sectionVariants = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
 };
@@ -117,7 +117,7 @@ const heroVariants = {
     scale: 1,
     transition: {
       duration: 0.8,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
 };
@@ -129,7 +129,7 @@ const filterVariants = {
     x: 0,
     transition: {
       duration: 0.5,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
 };
@@ -140,7 +140,7 @@ const pageVariants = {
     opacity: 1,
     transition: {
       duration: 0.6,
-      ease: "easeOut",
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
 };
@@ -533,7 +533,7 @@ export default function CategoriesClient() {
                       whileTap={{ scale: 0.98 }}
                       className="group"
                     >
-                      <Link href={subcategory.href} className="block h-full">
+                      <Link href={`/products/${subcategory.href.replace(/^\/+/, '')}`} className="block h-full">
                         <div className="bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300 group-hover:shadow-md border border-gray-200 h-full">
                           {/* Category Image */}
                           <div className="bg-gray-50 relative overflow-hidden h-32 sm:h-40">

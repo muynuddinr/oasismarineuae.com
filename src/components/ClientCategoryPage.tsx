@@ -233,7 +233,7 @@ export default function ClientCategoryPage({
         } else {
           for (const category of navData.categories || []) {
             foundSubcategory = category.subcategories?.find(
-              (sub: any) => sub.href === currentPath
+              (sub: any) => sub.href.replace(/^\/+/, '') === currentSlug
             );
             if (foundSubcategory) {
               parentCategory = category;
@@ -366,10 +366,8 @@ export default function ClientCategoryPage({
   const filteredProducts = products
     .filter((product) => {
       const matchesSearch =
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.shortDescription
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        (product.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+        (product.shortDescription?.toLowerCase() || '').includes(searchTerm.toLowerCase());
 
       if (filterBy === "all") return matchesSearch;
       if (filterBy === "featured")
@@ -386,7 +384,7 @@ export default function ClientCategoryPage({
     .sort((a, b) => {
       switch (sortBy) {
         case "name":
-          return a.name.localeCompare(b.name);
+          return (a.name || '').localeCompare(b.name || '');
         case "rating":
           return (
             (b.reviewsData?.averageRating || 0) -
@@ -394,7 +392,8 @@ export default function ClientCategoryPage({
           );
         case "newest":
           return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            new Date(b.createdAt || Date.now()).getTime() -
+            new Date(a.createdAt || Date.now()).getTime()
           );
         default:
           return 0;
@@ -794,7 +793,7 @@ export default function ClientCategoryPage({
               <motion.section
                 key="products-grid"
                 initial="hidden"
-                animate={isProductsInView ? "visible" : "hidden"}
+                animate="visible"
                 variants={sectionVariants}
               >
                 {/* Results Count */}
@@ -824,8 +823,20 @@ export default function ClientCategoryPage({
                       : "grid-cols-1"
                   }`}
                 >
-                  {filteredProducts.map((product, index) => (
-                    <motion.div
+                  {filteredProducts.map((product, index) => {
+                    const subcategorySlug = (product.subcategory?.name || pageInfo?.name || 'category')
+                      .toLowerCase()
+                      .replace(/[^\w\s-]/g, '')
+                      .replace(/\s+/g, '-')
+                      .replace(/-+/g, '-');
+                    const productSlug = product.slug || (product.name || '')
+                      .toLowerCase()
+                      .replace(/[^\w\s-]/g, '')
+                      .replace(/\s+/g, '-')
+                      .replace(/-+/g, '-');
+                    const href = `/products/${subcategorySlug}/${productSlug}`;
+                    
+                    return <motion.div
                       key={product.id}
                       variants={itemVariants}
                       whileHover={{
@@ -833,7 +844,8 @@ export default function ClientCategoryPage({
                         transition: { duration: 0.2, ease: "easeOut" },
                       }}
                       whileTap={{ scale: 0.98 }}
-                      className="group"
+                      className="group cursor-pointer"
+                      onClick={() => router.push(href)}
                     >
                       <div
                         className={`bg-white rounded-lg shadow-sm overflow-hidden transition-all duration-300 group-hover:shadow-md border border-gray-200 h-full ${
@@ -956,17 +968,7 @@ export default function ClientCategoryPage({
                                 whileTap={{ scale: 0.98 }}
                               >
                                 <Link
-                                  href={`/products/${
-                                    // Use subcategory name converted to slug format
-                                    (product.subcategory?.name || pageInfo?.name || 'category')
-                                      .toLowerCase()
-                                      .replace(/[^\w\s-]/g, '')
-                                      .replace(/\s+/g, '-')
-                                      .replace(/-+/g, '-')
-                                  }/${
-                                    // Use product slug or generate from name
-                                    product.slug || product.name.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-')
-                                  }`}
+                                  href={href}
                                   className="inline-flex items-center text-blue-600 font-medium text-xs group-hover:text-blue-700 transition-colors duration-200"
                                 >
                                   View Details
@@ -990,7 +992,7 @@ export default function ClientCategoryPage({
                         </div>
                       </div>
                     </motion.div>
-                  ))}
+                  })}
                 </motion.div>
               </motion.section>
             )}

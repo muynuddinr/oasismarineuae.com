@@ -43,6 +43,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressContentEditableWarning={true}
+        suppressHydrationWarning={true}
       >
         <ConditionalNavbar />
         <Whatsapp />
