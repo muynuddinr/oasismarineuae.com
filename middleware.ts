@@ -19,11 +19,7 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Enforce HTTPS in production (optional, but recommended)
-  if (process.env.NODE_ENV === 'production' && !req.url.startsWith('https://')) {
-    return NextResponse.redirect(new URL(req.url.replace('http://', 'https://')));
-  }
-
+  // Vercel handles HTTPS automatically, so remove manual redirect
   return NextResponse.next();
 }
 
