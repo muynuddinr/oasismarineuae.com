@@ -9,7 +9,7 @@ const logger = winston.createLogger({
   level: 'info',
   transports: [
     new winston.transports.Console(),
-    ...(process.env.VERCEL ? [] : [new winston.transports.File({ filename: 'logs/security.log' })]),
+    new winston.transports.File({ filename: 'logs/security.log' }),
   ],
 });
 

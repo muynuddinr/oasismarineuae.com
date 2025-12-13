@@ -6,9 +6,5 @@
     "app/api/**/*.ts": {
       "maxDuration": 30
     }
-  },
-  "regions": ["fra1"],
-  "env": {
-    "NODE_ENV": "production"
   }
 }
