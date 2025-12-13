@@ -1,62 +1,81 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ContactModel, UserModel } from '@/models'
 import { ObjectId } from 'mongodb'
+import { z } from 'zod'
+import DOMPurify from 'dompurify'
+import { JSDOM } from 'jsdom'
+
+// Validation schema
+const contactSchema = z.object({
+  name: z.string().min(1).max(100),
+  email: z.string().email(),
+  phone: z.string().optional(),
+  subject: z.string().optional(),
+  message: z.string().min(1).max(1000),
+  priority: z.enum(['low', 'medium', 'high']).default('medium'),
+  productId: z.string().optional(),
+  productName: z.string().optional(),
+  productImage: z.string().optional(),
+  enquiryType: z.enum(['general', 'product', 'support']).default('general'),
+  userId: z.string().optional(),
+})
 
 export async function POST(request: NextRequest) {
   try {
+    // CSRF check
+    const csrfToken = request.headers.get('x-csrf-token');
+    if (!csrfToken || csrfToken !== process.env.CSRF_SECRET) {
+      console.warn('Invalid CSRF token');
+      return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
+    }
+
     const body = await request.json()
-    
+
+    // Validate input
+    const validated = contactSchema.safeParse(body)
+    if (!validated.success) {
+      console.warn('Invalid input for contact:', validated.error.issues)
+      return NextResponse.json(
+        { error: 'Invalid input data' },
+        { status: 400 }
+      )
+    }
+
+    const data = validated.data
+
+    // Sanitize strings
+    const window = new JSDOM('').window
+    const DOMPurifyServer = DOMPurify(window)
+    data.name = DOMPurifyServer.sanitize(data.name)
+    data.email = DOMPurifyServer.sanitize(data.email)
+    data.message = DOMPurifyServer.sanitize(data.message)
+    if (data.subject) data.subject = DOMPurifyServer.sanitize(data.subject)
+    if (data.phone) data.phone = DOMPurifyServer.sanitize(data.phone)
+
+    // Log the request
+
+    // Proceed with existing logic
     const { 
       name,
       email,
       phone, 
       subject, 
       message, 
-      priority = 'medium',
-      productId,
-      productName,
-      productImage,
-      enquiryType = 'general',
-      userId
-    } = body
-
-    // Validate required fields
-    if (!name || !email || !message) {
-      return NextResponse.json(
-        { error: 'Name, email, and message are required' },
-        { status: 400 }
-      )
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      )
-    }
-
-    console.log('Creating contact with data:', {
-      name,
-      email,
-      phone,
-      subject,
-      message,
       priority,
       productId,
       productName,
       productImage,
       enquiryType,
       userId
-    })
+    } = data
+
 
     // Create contact entry
     const contact = await ContactModel.create({
       name,
       email,
       phone: phone || '',
-      subject,
+      subject: subject || '',
       message,
       priority: priority as 'low' | 'medium' | 'high',
       status: 'new',
@@ -66,8 +85,6 @@ export async function POST(request: NextRequest) {
       productImage,
       enquiryType: enquiryType as 'product' | 'general' | 'support'
     })
-
-    console.log('Contact created successfully:', contact)
 
     return NextResponse.json({ 
       success: true, 
@@ -92,7 +109,6 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('Fetching contacts...')
     
     // Fetch all contacts
     const contacts = await ContactModel.findMany({}, {
@@ -126,14 +142,12 @@ export async function GET(request: NextRequest) {
       })
     );
 
-    console.log('Found contacts:', contactsWithUsers.length)
-
     return NextResponse.json(contactsWithUsers)
 
   } catch (error) {
     console.error('Error fetching contacts:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch contacts', details: (error as any).message },
+      { error: 'Failed to fetch contacts' },
       { status: 500 }
     )
   }

@@ -56,15 +56,12 @@ export class ContactModel {
 
   // Update contact by ID
   static async updateById(id: string, updateData: Partial<IContact>): Promise<IContact | null> {
-    console.log('ContactModel.updateById called with ID:', id);
-    console.log('Update data:', JSON.stringify(updateData, null, 2));
     
     const collection = await getCollection(this.collection);
     const now = new Date();
     
     try {
       const objectId = toObjectId(id);
-      console.log('Converted to ObjectId:', objectId);
       
       const result = await collection.findOneAndUpdate(
         { _id: objectId },
@@ -80,8 +77,6 @@ export class ContactModel {
         }
       );
 
-      console.log('MongoDB findOneAndUpdate result:', result);
-      console.log('Document found:', !!result);
       
       return result as IContact | null;
     } catch (error) {

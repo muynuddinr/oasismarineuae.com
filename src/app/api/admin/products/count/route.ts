@@ -38,13 +38,9 @@ export async function GET(request: NextRequest) {
       filter.isActive = isActive === 'true';
     }
 
-    console.log('Product count filter:', filter);
-    
     // Get product count
     const count = await ProductModel.count(filter);
     
-    console.log(`Product count for filter:`, filter, `= ${count}`);
-
     return NextResponse.json({ count });
   } catch (error) {
     console.error('Error fetching product count:', error);

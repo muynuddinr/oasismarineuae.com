@@ -9,17 +9,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Check admin authentication
-async function checkAdminAuth() {
-  const cookieStore = await cookies();
-  const adminSession = cookieStore.get('adminSession');
-  return adminSession?.value === 'true';
-}
-
 export async function POST(request: NextRequest) {
   try {
-    console.log('Upload API called');
-    
+
     // Check environment variables
     if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
       console.error('Missing Cloudinary environment variables');
@@ -29,25 +21,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth();
-    if (!isAdmin) {
-      console.log('Unauthorized access attempt');
-      return NextResponse.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
-      );
-    }
-
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const type = formData.get('type') as string; // 'image' or 'pdf'
 
-    console.log('File received:', file?.name, 'Type:', type);
-
     if (!file) {
       return NextResponse.json(
         { error: 'No file provided' },
+        { status: 400 }
+      );
+    }
+
+    // Validate file type and size
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+      console.warn('Invalid file type:', file.type);
+      return NextResponse.json(
+        { error: 'Invalid file type. Only JPEG, PNG, WebP images and PDFs are allowed.' },
+        { status: 400 }
+      );
+    }
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      console.warn('File too large:', file.size);
+      return NextResponse.json(
+        { error: 'File too large. Maximum size is 5MB.' },
         { status: 400 }
       );
     }
@@ -71,8 +70,6 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    console.log('File buffer size:', buffer.length);
-
     // Upload to Cloudinary
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadOptions: any = {
@@ -88,8 +85,6 @@ export async function POST(request: NextRequest) {
         ];
       }
 
-      console.log('Uploading to Cloudinary with options:', uploadOptions);
-
       cloudinary.uploader.upload_stream(
         uploadOptions,
         (error, result) => {
@@ -97,7 +92,6 @@ export async function POST(request: NextRequest) {
             console.error('Cloudinary upload error:', error);
             reject(error);
           } else {
-            console.log('Cloudinary upload success:', result?.secure_url);
             resolve(result);
           }
         }
@@ -121,15 +115,6 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth();
-    if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
-      );
-    }
-
     const { searchParams } = new URL(request.url);
     const publicId = searchParams.get('publicId');
     const type = searchParams.get('type'); // 'image' or 'pdf'

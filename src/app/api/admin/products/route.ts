@@ -3,13 +3,21 @@ import { ProductModel } from '@/models/Product';
 import { toObjectId, ObjectId } from '@/lib/db';
 import { cookies } from 'next/headers';
 import { generateSlug, generateUniqueSlug } from '@/utils/slug';
+import { z } from 'zod';
+import DOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
 
-// Check admin authentication
-async function checkAdminAuth() {
-  const cookieStore = await cookies();
-  const adminSession = cookieStore.get('adminSession');
-  return adminSession?.value === 'true';
-}
+// Validation schema for products
+const productSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().optional(),
+  price: z.number().optional(),
+  categoryId: z.string().optional(),
+  subcategoryId: z.string().optional(),
+  isActive: z.boolean().default(true),
+  images: z.array(z.string()).optional(),
+  specifications: z.record(z.any()).optional(),
+});
 
 // Disable caching for this route to always get fresh data
 export const dynamic = 'force-dynamic';
@@ -21,11 +29,6 @@ export async function GET(request: NextRequest) {
     const categoryId = searchParams.get('categoryId');
     const subcategoryId = searchParams.get('subcategoryId');
 
-    console.log('Products API - GET request with filters:', JSON.stringify({
-      categoryId,
-      subcategoryId
-    }));
-
     const filter: any = {};
     // Convert to ObjectId for proper MongoDB querying
     if (categoryId) filter.categoryId = toObjectId(categoryId);
@@ -33,17 +36,10 @@ export async function GET(request: NextRequest) {
 
     const products = await ProductModel.findMany(filter, { sort: { createdAt: -1 } });
     
-    console.log(`${products.length} total products`);
     const activeProducts = products.filter(p => p.isActive);
-    console.log(`Active products: ${activeProducts.length}`);
     
     if (activeProducts.length > 0) {
-      console.log('First 3 products:', activeProducts.slice(0, 3).map(p => ({ 
-        name: p.name, 
-        isActive: p.isActive,
-        id: p._id?.toString() || 'no-id',
-        _id: p._id
-      })));
+      // Logging removed
     }
 
     // Transform products to ensure they have id field instead of _id
@@ -56,13 +52,6 @@ export async function GET(request: NextRequest) {
         subcategoryId: product.subcategoryId?.toString(),
       };
     });
-
-    console.log('Transformed products sample:', transformedProducts.slice(0, 2).map(p => ({
-      name: p.name,
-      id: p.id,
-      hasIdField: 'id' in p,
-      hasUnderscoreId: '_id' in p
-    })));
 
     // Return with cache control headers to prevent caching
     return NextResponse.json(
@@ -86,16 +75,33 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth();
-    if (!isAdmin) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
-      );
+    // CSRF check
+    const csrfToken = request.headers.get('x-csrf-token');
+    if (!csrfToken || csrfToken !== process.env.CSRF_SECRET) {
+      console.warn('Invalid CSRF token');
+      return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
     }
 
     const body = await request.json();
+
+    // Validate input
+    const validated = productSchema.safeParse(body);
+    if (!validated.success) {
+      console.warn('Invalid product data:', validated.error.errors);
+      return NextResponse.json(
+        { error: 'Invalid product data' },
+        { status: 400 }
+      );
+    }
+
+    const data = validated.data;
+
+    // Sanitize strings
+    const window = new JSDOM('').window;
+    const DOMPurifyServer = DOMPurify(window);
+    data.name = DOMPurifyServer.sanitize(data.name);
+    if (data.description) data.description = DOMPurifyServer.sanitize(data.description);
+
     const {
       name,
       shortDescription,
@@ -119,23 +125,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Log what we received to diagnose subcategory issues
-    console.log('📝 Creating product with data:', {
-      name,
-      categoryId,
-      subcategoryId,
-      hasSubcategoryId: !!subcategoryId,
-      subcategoryIdType: typeof subcategoryId,
-      subcategoryIdValue: subcategoryId
-    });
 
     // Convert string IDs to ObjectIds (MongoDB expects ObjectId type)
     const categoryObjectId = categoryId ? toObjectId(categoryId) : undefined;
     const subcategoryObjectId = subcategoryId ? toObjectId(subcategoryId) : undefined;
-
-    console.log('✅ Converted to ObjectIds:', {
-      categoryObjectId: categoryObjectId?.toString(),
-      subcategoryObjectId: subcategoryObjectId?.toString()
-    });
 
     // Generate slug from product name
     const baseSlug = generateSlug(name);
@@ -149,8 +142,6 @@ export async function POST(request: NextRequest) {
     // Generate unique slug
     const uniqueSlug = generateUniqueSlug(baseSlug, existingSlugs);
     
-    console.log('🔗 Generated slug:', uniqueSlug);
-
     const product = await ProductModel.create({
       name,
       slug: uniqueSlug,
@@ -177,8 +168,6 @@ export async function POST(request: NextRequest) {
       subcategoryId: product.subcategoryId?.toString(),
     };
 
-    console.log('✅ Product created successfully:', transformedProduct.name);
-    
     return NextResponse.json(
       { product: transformedProduct },
       {
@@ -198,21 +187,28 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    console.log('PUT request received for product update');
-    
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth();
-    console.log('Admin authentication result:', isAdmin);
-    if (!isAdmin) {
+
+    const body = await request.json();
+
+    // Validate input (partial update, so optional fields)
+    const updateSchema = productSchema.partial();
+    const validated = updateSchema.safeParse(body);
+    if (!validated.success) {
+      console.warn('Invalid product update data:', validated.error.errors);
       return NextResponse.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
+        { error: 'Invalid product update data' },
+        { status: 400 }
       );
     }
 
-    const body = await request.json();
-    console.log('Request body:', JSON.stringify(body, null, 2));
-    
+    const data = validated.data;
+
+    // Sanitize
+    const window = new JSDOM('').window;
+    const DOMPurifyServer = DOMPurify(window);
+    if (data.name) data.name = DOMPurifyServer.sanitize(data.name);
+    if (data.description) data.description = DOMPurifyServer.sanitize(data.description);
+
     const { 
       id, 
       name,
@@ -229,11 +225,7 @@ export async function PUT(request: NextRequest) {
       isActive
     } = body;
 
-    console.log('Product ID to update:', id);
-    console.log('Product ID type:', typeof id);
-
     if (!id) {
-      console.log('Missing product ID in PUT request');
       return NextResponse.json(
         { error: 'Product ID is required' },
         { status: 400 }
@@ -243,13 +235,6 @@ export async function PUT(request: NextRequest) {
     // Convert string IDs to ObjectIds (MongoDB expects ObjectId type)
     const categoryObjectId = categoryId ? toObjectId(categoryId) : undefined;
     const subcategoryObjectId = subcategoryId ? toObjectId(subcategoryId) : undefined;
-
-    console.log('🔄 Converting IDs for update:', {
-      categoryId,
-      subcategoryId,
-      categoryObjectId: categoryObjectId?.toString(),
-      subcategoryObjectId: subcategoryObjectId?.toString()
-    });
 
     // Generate new slug if name is being updated
     let newSlug;
@@ -265,7 +250,6 @@ export async function PUT(request: NextRequest) {
       
       // Generate unique slug
       newSlug = generateUniqueSlug(baseSlug, existingSlugs);
-      console.log('🔗 Regenerated slug for update:', newSlug);
     }
 
     // Prepare update data with only valid Product model fields
@@ -292,14 +276,9 @@ export async function PUT(request: NextRequest) {
       }
     });
 
-    console.log('Update data prepared:', JSON.stringify(updateData, null, 2));
-    console.log('Attempting to update product with ID:', id);
-
     const product = await ProductModel.updateById(id, updateData);
-    console.log('Update result:', product ? 'Success' : 'Product not found');
-
+    
     if (!product) {
-      console.log('Product not found for ID:', id);
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
@@ -327,28 +306,18 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    console.log('DELETE request received for product deletion');
-    
-    // Check admin authentication
-    const isAdmin = await checkAdminAuth();
-    console.log('Admin authentication result:', isAdmin);
-    
-    if (!isAdmin) {
-      console.log('Unauthorized access attempt for product deletion');
-      return NextResponse.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
-      );
-    }
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    
-    console.log('Product ID to delete:', id);
-    console.log('Product ID type:', typeof id);
 
     if (!id) {
-      console.log('No product ID provided');
+      return NextResponse.json(
+        { error: 'Product ID is required' },
+        { status: 400 }
+      );
+    }
+    
+    if (!id) {
       return NextResponse.json(
         { error: 'Product ID is required' },
         { status: 400 }
@@ -357,26 +326,21 @@ export async function DELETE(request: NextRequest) {
 
     // Validate ObjectId format
     if (!ObjectId.isValid(id)) {
-      console.log('Invalid ObjectId format for product deletion:', id);
       return NextResponse.json(
         { error: 'Invalid product ID format' },
         { status: 400 }
       );
     }
 
-    console.log('Attempting to delete product with ID:', id);
     const deleted = await ProductModel.deleteById(id);
-    console.log('Product deletion result:', deleted);
 
     if (!deleted) {
-      console.log('Product not found for deletion, ID:', id);
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
       );
     }
 
-    console.log('Product deleted successfully:', id);
     return NextResponse.json({ message: 'Product deleted successfully' });
   } catch (error) {
     console.error('Error deleting product:', error);

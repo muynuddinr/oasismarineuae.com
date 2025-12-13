@@ -9,18 +9,13 @@ export async function PATCH(
   try {
     const resolvedParams = await params;
     const contactId = resolvedParams.id;
-    console.log('PATCH request for contact ID:', contactId)
-    console.log('Contact ID type:', typeof contactId)
-    console.log('Contact ID length:', contactId?.length)
     
     const body = await request.json()
     const { status, priority } = body
     
-    console.log('Update data:', { status, priority })
 
     // Validate input
     if (!status && !priority) {
-      console.log('No status or priority provided')
       return NextResponse.json(
         { error: 'Status or priority is required' },
         { status: 400 }
@@ -29,8 +24,6 @@ export async function PATCH(
 
     // Validate ObjectId format
     if (!ObjectId.isValid(contactId)) {
-      console.log('Invalid ObjectId format:', contactId);
-      console.log('ObjectId.isValid result:', ObjectId.isValid(contactId));
       return NextResponse.json(
         { error: 'Invalid contact ID format' },
         { status: 400 }
@@ -42,10 +35,6 @@ export async function PATCH(
     if (status) updateData.status = status;
     if (priority) updateData.priority = priority;
     if (status === 'replied') updateData.repliedAt = new Date();
-
-    console.log('Attempting to update contact with ID:', contactId);
-    console.log('ObjectId representation:', new ObjectId(contactId));
-    console.log('Update data to apply:', updateData);
 
     // Update contact
     const updatedContact = await ContactModel.updateById(contactId, updateData);

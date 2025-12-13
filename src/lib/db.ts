@@ -34,7 +34,6 @@ export async function connectToDatabase(): Promise<MongoConnection> {
     
     cached = { client, db };
     
-    console.log('✅ Connected to MongoDB Atlas');
     return cached;
   } catch (error) {
     console.error('❌ Failed to connect to MongoDB:', error);

@@ -1,5 +1,4 @@
 ﻿import { NextAuthOptions } from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
 import { UserModel } from '@/models'
 
 export const authOptions: NextAuthOptions = {
@@ -8,10 +7,7 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+    // Google provider removed
   ],
   callbacks: {
     async signIn({ user, account, profile }) {

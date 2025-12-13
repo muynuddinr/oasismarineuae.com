@@ -1,19 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { UserModel } from '@/models/User';
 import { cookies } from 'next/headers';
+import { z } from 'zod';
+import winston from 'winston';
+
+// Setup Winston logger
+const logger = winston.createLogger({
+  level: 'info',
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'logs/security.log' }),
+  ],
+});
+
+// Validation schemas
+const userUpdateSchema = z.object({
+  id: z.string(),
+  name: z.string().min(1).max(100).optional(),
+  email: z.string().email().optional(),
+  role: z.enum(['user', 'admin']).optional(),
+});
 
 export async function GET(request: NextRequest) {
   try {
-    // Check if admin is authenticated
-    const cookieStore = await cookies();
-    const adminSession = cookieStore.get('adminSession');
-    
-    if (!adminSession || adminSession.value !== 'true') {
-      return NextResponse.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
-      );
-    }
+    logger.info(`GET /api/admin/users from ${request.ip}`);
 
     // Get search and filter parameters
     const { searchParams } = new URL(request.url);
@@ -81,16 +91,7 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // Check if admin is authenticated
-    const cookieStore = await cookies();
-    const adminSession = cookieStore.get('adminSession');
-    
-    if (!adminSession || adminSession.value !== 'true') {
-      return NextResponse.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
-      );
-    }
+    logger.info(`DELETE /api/admin/users from ${request.ip}`);
 
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
@@ -127,22 +128,25 @@ export async function DELETE(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
-    // Check if admin is authenticated
-    const cookieStore = await cookies();
-    const adminSession = cookieStore.get('adminSession');
-    
-    if (!adminSession || adminSession.value !== 'true') {
+    logger.info(`PATCH /api/admin/users from ${request.ip}`);
+
+    const body = await request.json();
+
+    // Validate input
+    const validated = userUpdateSchema.safeParse(body);
+    if (!validated.success) {
+      logger.warn('Invalid user update data:', validated.error.errors);
       return NextResponse.json(
-        { error: 'Unauthorized. Admin access required.' },
-        { status: 401 }
+        { error: 'Invalid user update data' },
+        { status: 400 }
       );
     }
 
-    const { userId, action } = await request.json();
+    const { id, name, email, role } = validated.data;
 
-    if (!userId || !action) {
+    if (!id) {
       return NextResponse.json(
-        { error: 'User ID and action are required' },
+        { error: 'User ID is required' },
         { status: 400 }
       );
     }

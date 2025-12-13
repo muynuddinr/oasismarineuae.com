@@ -104,15 +104,12 @@ export class ProductModel {
 
   // Update product by ID
   static async updateById(id: string, updateData: Partial<IProduct>): Promise<IProduct | null> {
-    console.log('ProductModel.updateById called with ID:', id);
-    console.log('Update data:', JSON.stringify(updateData, null, 2));
     
     const collection = await getCollection(this.collection);
     const now = new Date();
     
     try {
       const objectId = toObjectId(id);
-      console.log('Converted to ObjectId:', objectId);
       
       const result = await collection.findOneAndUpdate(
         { _id: objectId },
@@ -128,8 +125,6 @@ export class ProductModel {
         }
       );
 
-      console.log('MongoDB findOneAndUpdate result:', result);
-      console.log('Document found:', !!result);
       
       return result as IProduct | null;
     } catch (error) {

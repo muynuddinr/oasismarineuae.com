@@ -48,7 +48,6 @@ export class CategoryModel {
     const collection = await getCollection(this.collection);
     const now = new Date();
     
-    console.log('CategoryModel.updateById called with:', { id, updateData });
     
     try {
       // Try to find by ObjectId first
@@ -57,11 +56,11 @@ export class CategoryModel {
       try {
         const objectId = toObjectId(id);
         query = { _id: objectId };
-        console.log('Using ObjectId query:', query);
+        
       } catch (objectIdError) {
         // If ObjectId conversion fails, try to find by id field (legacy compatibility)
         query = { id: id };
-        console.log('Using string id query:', query);
+        
       }
       
       const result = await collection.findOneAndUpdate(
@@ -75,7 +74,7 @@ export class CategoryModel {
         { returnDocument: 'after' }
       );
 
-      console.log('MongoDB findOneAndUpdate result:', result);
+      
       return result as ICategory | null;
     } catch (error) {
       console.error('Error in CategoryModel.updateById:', error);
