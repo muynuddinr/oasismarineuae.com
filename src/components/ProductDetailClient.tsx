@@ -35,6 +35,7 @@ import {
   FaRulerCombined,
 } from "react-icons/fa";
 import jsPDF from "jspdf";
+import { getOptimizedImageUrl } from "@/utils/cloudinary";
 
 interface Product {
   id: string;
