@@ -1,0 +1,80 @@
+# Node.js and dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build outputs
+.next
+out
+build
+dist
+
+# Version control
+.git
+.github
+.gitignore
+
+# Environment and config
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.staging
+*.env
+!.env.example
+
+# Development tools and configs
+.vscode
+.idea
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+*.pem
+.eslintcache
+
+# Tests
+coverage
+__tests__
+*.test.js
+*.spec.js
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+
+# Documentation and other assets not needed in Docker image
+README.md
+LICENSE
+*.md
+docs
+
+# Cache
+.cache
+.npm
+.yarn
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Other common files to ignore
+.editorconfig
+.prettierrc
+.dockerignore
+docker-compose.yaml
+docker-compose.yml
+Dockerfile
+.nyc_output
+.coverage
+prisma
+db.js
+assign-products.ts
+check-*.js
+fix-*.js
+setup-*.js
+test-*.js
+cleanup-*.js
+new-config.ts

@@ -1,0 +1,25 @@
+{"level":"info","message":"GET /api/admin/dashboard from undefined"}
+{"level":"info","message":"POST /api/admin/dashboard (login) from undefined"}
+{"level":"warn","message":"Failed login attempt"}
+{"level":"info","message":"GET /api/admin/dashboard from undefined"}
+{"level":"info","message":"GET /api/admin/dashboard from undefined"}
+{"level":"info","message":"POST /api/admin/dashboard (login) from undefined"}
+{"level":"warn","message":"Failed login attempt"}
+{"level":"info","message":"GET /api/admin/dashboard from undefined"}
+{"level":"info","message":"GET /api/admin/dashboard from undefined"}
+{"level":"info","message":"POST /api/admin/dashboard (login) from undefined"}
+{"level":"warn","message":"Failed login attempt"}
+{"level":"info","message":"GET /api/admin/dashboard from undefined"}
+{"level":"info","message":"GET /api/admin/dashboard from undefined"}
+{"level":"info","message":"POST /api/admin/dashboard (login) from undefined"}
+{"level":"warn","message":"Failed login attempt"}
+{"level":"info","message":"GET /api/admin/dashboard from undefined"}
+{"timestamp":"2025-12-23T09:11:03.342Z","action":"DELETE_PRODUCT_UNAUTHORIZED","endpoint":"http://localhost:3000/api/admin/products?id=694a53210f072f9b0447f07b","method":"DELETE","ip":"::1","userAgent":"PostmanRuntime/7.51.0","success":false,"error":"Unauthorized attempt"}
+{"timestamp":"2025-12-23T09:11:12.186Z","action":"DELETE_PRODUCT_SUCCESS","endpoint":"http://localhost:3000/api/admin/products?id=694a53210f072f9b0447f07b","method":"DELETE","ip":"::1","userAgent":"PostmanRuntime/7.51.0","data":"{\"productId\":\"694a53210f072f9b0447f07b\"}","success":true}
+{"level":"info","message":"GET /api/admin/dashboard from undefined"}
+{"level":"info","message":"GET /api/admin/dashboard from ::1"}
+{"level":"info","message":"GET /api/admin/dashboard from ::1"}
+{"timestamp":"2025-12-23T10:09:45.389Z","action":"DELETE_PRODUCT_SUCCESS","endpoint":"http://localhost:3000/api/admin/products?id=694a5d0a73fbe93f55115164","method":"DELETE","ip":"::1","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36","data":"{\"productId\":\"694a5d0a73fbe93f55115164\"}","success":true}
+{"timestamp":"2025-12-23T10:11:43.757Z","action":"DELETE_PRODUCT_UNAUTHORIZED","endpoint":"http://localhost:3000/api/admin/products?id=694a5d0a73fbe93f55115164","method":"DELETE","ip":"::1","userAgent":"PostmanRuntime/7.51.0","success":false,"error":"Unauthorized attempt"}
+{"timestamp":"2025-12-23T10:12:05.410Z","action":"DELETE_PRODUCT_NOT_FOUND","endpoint":"http://localhost:3000/api/admin/products?id=694a5d0a73fbe93f55115164","method":"DELETE","ip":"::1","userAgent":"PostmanRuntime/7.51.0","data":"{\"id\":\"694a5d0a73fbe93f55115164\"}","success":false,"error":"Product not found"}
+{"timestamp":"2025-12-23T10:12:48.580Z","action":"DELETE_PRODUCT_SUCCESS","endpoint":"http://localhost:3000/api/admin/products?id=694a6a95c064f9d58093b7e6","method":"DELETE","ip":"::1","userAgent":"PostmanRuntime/7.51.0","data":"{\"productId\":\"694a6a95c064f9d58093b7e6\"}","success":true}
