@@ -204,15 +204,6 @@ export default function ProductsPage() {
   const addNewProduct = async () => {
     if (newProduct.name && newProduct.shortDescription && newProduct.cardImage) {
       try {
-        console.log('🔍 ADMIN PANEL - Creating new product with data:', {
-          name: newProduct.name,
-          categoryId: newProduct.categoryId,
-          subcategoryId: newProduct.subcategoryId,
-          hasSubcategoryId: !!newProduct.subcategoryId,
-          subcategoryIdType: typeof newProduct.subcategoryId,
-          subcategoryIdValue: newProduct.subcategoryId,
-          fullProduct: newProduct
-        });
         const response = await fetch('/api/admin/products', {
           method: 'POST',
           headers: {
@@ -222,11 +213,8 @@ export default function ProductsPage() {
           body: JSON.stringify(newProduct),
         });
 
-        console.log('Create product response status:', response.status);
-
         if (response.ok) {
           const data = await response.json();
-          console.log('Product created successfully:', data);
           
           // Reset form
           setNewProduct({
@@ -267,10 +255,6 @@ export default function ProductsPage() {
   const updateProduct = async () => {
     if (editingProduct && editingProduct.name && editingProduct.shortDescription && editingProduct.cardImage) {
       try {
-        console.log('Attempting to update product:', editingProduct);
-        console.log('Product ID:', editingProduct.id);
-        console.log('Product ID type:', typeof editingProduct.id);
-        
         const response = await fetch('/api/admin/products', {
           method: 'PUT',
           headers: {
@@ -280,12 +264,8 @@ export default function ProductsPage() {
           body: JSON.stringify(editingProduct),
         });
 
-        console.log('Product update response status:', response.status);
-        console.log('Product update response URL:', response.url);
-
         if (response.ok) {
           const data = await response.json();
-          console.log('Product update successful:', data);
           setProducts(products.map(p => 
             p.id === editingProduct.id ? data.product : p
           ));
@@ -310,8 +290,6 @@ export default function ProductsPage() {
         toast.error(`Network error while updating product: ${errorMessage}`);
       }
     } else {
-      console.log('Validation failed - missing required fields');
-      console.log('editingProduct:', editingProduct);
       toast.error('Please fill in required fields');
     }
   };
@@ -386,27 +364,18 @@ export default function ProductsPage() {
     }
 
     try {
-      console.log('Attempting to delete product with ID:', id);
-      console.log('Product ID type:', typeof id);
-      console.log('Product ID length:', id?.length);
-      
       const response = await fetch(`/api/admin/products?id=${id}`, {
         method: 'DELETE',
       });
 
-      console.log('Delete response status:', response.status);
-      console.log('Delete response URL:', response.url);
-
       if (response.ok) {
         const result = await response.json();
-        console.log('Delete successful:', result);
         setProducts(products.filter(p => p.id !== id));
         toast.success('Product deleted successfully');
       } else {
         let errorMessage = 'Unknown error';
         try {
           const errorData = await response.json();
-          console.error('Delete failed:', errorData);
           errorMessage = errorData.error || `HTTP ${response.status}: ${response.statusText}`;
         } catch (parseError) {
           console.error('Error parsing error response:', parseError);
@@ -423,13 +392,7 @@ export default function ProductsPage() {
 
   const updateProductStatus = async (id: string, isActive: boolean) => {
     try {
-      console.log('Attempting to update product status for ID:', id);
-      console.log('New status:', isActive);
-      console.log('Product ID type:', typeof id);
-      console.log('Product ID length:', id?.length);
-      
       const requestBody = { id, isActive };
-      console.log('Request body for status update:', JSON.stringify(requestBody));
       
       const response = await fetch('/api/admin/products', {
         method: 'PUT',
@@ -439,12 +402,8 @@ export default function ProductsPage() {
         body: JSON.stringify(requestBody),
       });
 
-      console.log('Status update response status:', response.status);
-      console.log('Status update response URL:', response.url);
-
       if (response.ok) {
         const result = await response.json();
-        console.log('Status update successful:', result);
         setProducts(products.map(p => 
           p.id === id ? { ...p, isActive } : p
         ));
@@ -454,12 +413,9 @@ export default function ProductsPage() {
         try {
           const errorData = await response.json();
           errorMessage = errorData.error || errorData.message || 'Unknown error';
-          console.error('Status update error details:', errorData);
         } catch (parseError) {
-          console.error('Failed to parse error response:', parseError);
           errorMessage = `HTTP ${response.status}`;
         }
-        console.error('Failed to update product status. Error:', errorMessage);
         toast.error(`Failed to update product status: ${errorMessage}`);
       }
     } catch (error) {
@@ -1279,9 +1235,6 @@ export default function ProductsPage() {
                           </button>
                           <button
                             onClick={() => {
-                              console.log('Delete button clicked for product:', product);
-                              console.log('Product ID:', product.id);
-                              console.log('Product name:', product.name);
                               if (!product.id) {
                                 alert('Error: Product ID is undefined. Cannot delete product.');
                                 return;

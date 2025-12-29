@@ -57,14 +57,11 @@ export async function PATCH(
     const updatedContact = await ContactModel.updateById(contactId, updateData);
 
     if (!updatedContact) {
-      console.log('Contact not found for ID:', contactId);
       return NextResponse.json(
         { error: 'Contact not found' },
         { status: 404 }
       )
     }
-
-    console.log('Contact updated successfully:', updatedContact._id)
     
     // 📝 LOG SUCCESS
     logAdminActionFromRequest(request, 'UPDATE_CONTACT_SUCCESS', true, { contactId, updates: Object.keys(updateData) });
@@ -103,7 +100,6 @@ export async function DELETE(
   try {
     const resolvedParams = await params;
     const contactId = resolvedParams.id;
-    console.log('DELETE request for contact ID:', contactId)
     
     // Validate ObjectId format
     if (!ObjectId.isValid(contactId)) {
@@ -123,8 +119,6 @@ export async function DELETE(
         { status: 404 }
       )
     }
-
-    console.log('Contact deleted successfully:', contactId)
     
     // 📝 LOG SUCCESS
     logAdminActionFromRequest(request, 'DELETE_CONTACT_SUCCESS', true, { contactId });

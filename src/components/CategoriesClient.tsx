@@ -255,16 +255,11 @@ export default function CategoriesClient() {
         const subcategoriesWithCounts = await Promise.all(
           allSubcategories.map(async (subcategory) => {
             try {
-              console.log(
-                `Fetching products for subcategory: ${subcategory.name}`
-              );
-
               const productsResponse = await fetch(
                 `/api/admin/products/count?subcategoryId=${subcategory.id}&isActive=true`
               );
               if (productsResponse.ok) {
                 const countData = await productsResponse.json();
-                console.log(`Count data for ${subcategory.name}:`, countData);
 
                 return {
                   ...subcategory,
@@ -283,8 +278,6 @@ export default function CategoriesClient() {
             };
           })
         );
-
-        console.log("Subcategories with counts:", subcategoriesWithCounts);
 
         setCategories(categoriesData);
         setSubcategories(subcategoriesWithCounts);

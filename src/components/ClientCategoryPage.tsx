@@ -214,18 +214,13 @@ export default function ClientCategoryPage({
           );
           if (response.ok) {
             const data = await response.json();
-            console.log('🔍 Category products fetched:', data.products?.length);
             
             // Find inactive products
             const inactiveProducts = data.products?.filter((product: Product) => !product.isActive) || [];
-            if (inactiveProducts.length > 0) {
-              console.log('⚠️ INACTIVE PRODUCTS (not showing on frontend):', inactiveProducts.map((p: Product) => p.name));
-            }
             
             const filteredProducts =
               data.products?.filter((product: Product) => product.isActive) ||
               [];
-            console.log('✅ Active products showing:', filteredProducts.length);
             setProducts(filteredProducts);
           } else {
             throw new Error("Failed to fetch products for category");
@@ -269,23 +264,13 @@ export default function ClientCategoryPage({
             );
             if (response.ok) {
               const data = await response.json();
-              console.log('🔍 Products fetched from API:', data.products?.length);
-              console.log('🔍 All products:', data.products?.map((p: Product) => ({ 
-                name: p.name, 
-                isActive: p.isActive,
-                subcategoryId: p.subcategoryId 
-              })));
               
               // Find inactive products
               const inactiveProducts = data.products?.filter((product: Product) => !product.isActive) || [];
-              if (inactiveProducts.length > 0) {
-                console.log('⚠️ INACTIVE PRODUCTS (not showing on frontend):', inactiveProducts.map((p: Product) => p.name));
-              }
               
               const filteredProducts =
                 data.products?.filter((product: Product) => product.isActive) ||
                 [];
-              console.log('✅ Active products after filter:', filteredProducts.length);
               setProducts(filteredProducts);
             } else {
               throw new Error("Failed to fetch products for subcategory");

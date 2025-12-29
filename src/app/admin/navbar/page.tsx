@@ -462,8 +462,6 @@ export default function NavbarPage() {
       if (!response.ok) {
         throw new Error('Failed to create page');
       }
-      
-      console.log(`Page created for route: ${href}`);
     } catch (error) {
       console.error('Error creating page:', error);
       toast.warn('Page creation failed, but navigation item was saved.');
