@@ -1,48 +1,56 @@
 /**
  * Admin Authentication Middleware
  * Provides secure authentication checks for admin routes
- * Supports both NextAuth sessions and Authorization Bearer tokens
+ * Supports JWT tokens and session cookies
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { authOptions, verifyToken } from '@/lib/auth';
 import { cookies } from 'next/headers';
 
 /**
  * Check if request has valid admin authentication
  * Supports multiple authentication methods:
- * 1. Authorization Bearer token (for Postman/API clients)
- * 2. NextAuth session (for web UI)
- * 3. adminSession cookie (legacy, less secure)
+ * 1. JWT token in auth-token cookie (PRIMARY - secure)
+ * 2. Authorization Bearer token (for API clients)
+ * 3. NextAuth session (for web UI)
+ * 4. adminSession cookie (legacy fallback)
  */
 export async function checkAdminAuth(request: NextRequest): Promise<boolean> {
   try {
-    // Method 1: Check Authorization header (RECOMMENDED for Postman)
-    const authHeader = request.headers.get('authorization');
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-      
-      // Verify token matches NEXTAUTH_SECRET
-      if (token === process.env.NEXTAUTH_SECRET) {
+    // Method 1: Check JWT in auth-token cookie (PRIMARY)
+    const cookieStore = await cookies();
+    const authToken = cookieStore.get('auth-token')?.value;
+    
+    if (authToken) {
+      const decoded = verifyToken(authToken);
+      if (decoded && decoded.role === 'admin') {
         return true;
       }
     }
 
-    // Method 2: Check NextAuth session (for web UI)
+    // Method 2: Check Authorization Bearer token (for API clients)
+    const authHeader = request.headers.get('authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      const decoded = verifyToken(token);
+      if (decoded && decoded.role === 'admin') {
+        return true;
+      }
+    }
+
+    // Method 3: Check NextAuth session (for web UI)
     try {
       const session = await getServerSession(authOptions);
       if (session && session.user) {
-        // Optional: Add role-based check here
-        // if ((session.user as any).role === 'admin') return true;
         return true;
       }
     } catch (error) {
       console.error('Session check failed:', error);
     }
 
-    // Method 3: Check adminSession cookie (legacy)
-    const cookieStore = await cookies();
+    // Method 4: Fallback to legacy adminSession cookie
     const adminSession = cookieStore.get('adminSession');
     if (adminSession?.value === 'true') {
       return true;

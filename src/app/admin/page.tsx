@@ -30,29 +30,59 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate loading time
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Check credentials
-    if (credentials.username === 'admin@oasismarineuae' && credentials.password === 'Admin@uae123') {
-      // Create admin session
-      Cookies.set('adminSession', 'true', { expires: 1 }); // Expires in 1 day
-      Cookies.set('adminUser', credentials.username, { expires: 1 });
-      
-      toast.success('Login successful! Welcome Admin', {
-        position: "top-right",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
+    try {
+      // Call the JWT login API endpoint
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: credentials.username,
+          password: credentials.password,
+        }),
       });
 
-      setTimeout(() => {
-        router.push('/admin/dashboard');
-      }, 2000);
-    } else {
-      toast.error('Invalid username or password', {
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store user info in cookies for UI
+        Cookies.set('adminUser', credentials.username, { expires: 1 });
+        
+        toast.success('Login successful! Welcome Admin', {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+
+        setTimeout(() => {
+          router.push('/admin/dashboard');
+        }, 2000);
+      } else if (response.status === 429) {
+        toast.error('Too many login attempts. Please try again later.', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } else {
+        toast.error(data.error || 'Invalid username or password', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('An error occurred during login. Please try again.', {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -60,9 +90,9 @@ export default function AdminLoginPage() {
         pauseOnHover: true,
         draggable: true,
       });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

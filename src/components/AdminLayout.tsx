@@ -46,20 +46,34 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }
   }, []);
 
-  const handleLogout = () => {
-    Cookies.remove('adminSession');
-    Cookies.remove('adminUser');
-    setAdminUser('Admin');
-    
-    toast.success('Logged out successfully!', {
-      position: "top-right",
-      autoClose: 1500,
-    });
-    
-    // Redirect to admin login page after a short delay
-    setTimeout(() => {
-      router.push('/admin');
-    }, 1500);
+  const handleLogout = async () => {
+    try {
+      // Call logout API endpoint
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clear client-side cookies
+      Cookies.remove('adminSession');
+      Cookies.remove('adminUser');
+      Cookies.remove('auth-token');
+      setAdminUser('Admin');
+      
+      toast.success('Logged out successfully!', {
+        position: "top-right",
+        autoClose: 1500,
+      });
+      
+      // Redirect to admin login page after a short delay
+      setTimeout(() => {
+        router.push('/admin');
+      }, 1500);
+    }
   };
 
   const isActive = (href: string) => pathname === href;

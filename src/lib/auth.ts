@@ -1,5 +1,50 @@
 ﻿import { NextAuthOptions } from 'next-auth'
 import { UserModel } from '@/models'
+import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs'
+
+// Get JWT secret from environment variables
+const JWT_SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production'
+const JWT_EXPIRATION = process.env.JWT_EXPIRATION || '24h' // Token expiration time
+
+// Admin credentials (should be in environment variables for production)
+export const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin@oasismarineuae'
+export const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || ''
+
+/**
+ * Hash a password using bcrypt
+ */
+export async function hashPassword(password: string): Promise<string> {
+  const salt = await bcrypt.genSalt(10)
+  return bcrypt.hash(password, salt)
+}
+
+/**
+ * Compare password with hash
+ */
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return bcrypt.compare(password, hash)
+}
+
+/**
+ * Generate JWT token
+ */
+export function generateToken(payload: any): string {
+  return jwt.sign(payload, JWT_SECRET, {
+    expiresIn: JWT_EXPIRATION,
+  })
+}
+
+/**
+ * Verify JWT token
+ */
+export function verifyToken(token: string): any {
+  try {
+    return jwt.verify(token, JWT_SECRET)
+  } catch (error) {
+    return null
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   // Use JWT strategy (no database adapter needed)
