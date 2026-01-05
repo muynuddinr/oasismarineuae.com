@@ -13,11 +13,6 @@ async function checkAdminAuth() {
 
 export async function GET() {
   try {
-    // Skip database operations during build time
-    if (process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL) {
-      return NextResponse.json({ categories: [] });
-    }
-
     const categories = await CategoryModel.findMany(
       {}, 
       { sort: { order: 1 } }

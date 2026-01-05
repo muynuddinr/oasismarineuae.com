@@ -632,14 +632,17 @@ function ProductsDropdown({
   };
 
   const handleMouseLeave = (e: React.MouseEvent) => {
-    // Check if relatedTarget exists and is an Element
-    const relatedTarget = e.relatedTarget as Element | null;
+    // Check if relatedTarget exists and is a valid Node element
+    const relatedTarget = e.relatedTarget;
     
-    if (
-      dropdownRef.current &&
-      relatedTarget && // Check if relatedTarget exists
-      !dropdownRef.current.contains(relatedTarget)
-    ) {
+    // If mouse leaves to outside the window or to a non-element target, close dropdown
+    if (!relatedTarget || !(relatedTarget instanceof Node)) {
+      setOpenDropdown(null);
+      return;
+    }
+    
+    // If mouse moves outside the dropdown container, close it
+    if (dropdownRef.current && !dropdownRef.current.contains(relatedTarget)) {
       setOpenDropdown(null);
     }
   };
