@@ -4,10 +4,10 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useInView } from 'framer-motion';
 import { useRef } from 'react';
-import RAms from "../app/assets/branch/logo1.png";
-import SAms from "../app/assets/branch/logo2.png";
-import DAms from "../app/assets/branch/logo3.png";
-import FAms from "../app/assets/branch/logo4.png";
+import RAms from "../../app/assets/branch/logo1.png";
+import SAms from "../../app/assets/branch/logo2.png";
+import DAms from "../../app/assets/branch/logo3.png";
+import FAms from "../../app/assets/branch/logo4.png";
 
 
 // Animation variants for different elements

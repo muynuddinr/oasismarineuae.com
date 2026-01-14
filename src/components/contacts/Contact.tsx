@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useInView } from "react-intersection-observer";
 import { motion, Variants } from "framer-motion";
 import Image from "next/image";
-import Banner from "../app/assets/banner/Contact 1.png";
+import Banner from "../../app/assets/banner/Contact 1.png";
 
 const Contact: React.FC = () => {
   const bannerRef = React.useRef<HTMLDivElement>(null);

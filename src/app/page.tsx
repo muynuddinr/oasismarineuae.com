@@ -6,7 +6,6 @@ import MarineSupplyPage from "../components/MarineSupplyPage";
 import FAQ from "../components/Faq";
 import Flipbook from "../components/Flipbook";
 import QHSEPolicySection from "../components/QHSEPolicySection";
-import ProductCategoriesSection from "../components/ProductCategoriesSection";
 import Testimony from "../components/Testimony";
 export default function Home() {
   return (

@@ -1,6 +1,6 @@
 
 import { Metadata } from "next";
-import Branch from "../../components/Branch";
+import Branch from "../../components/branch/Branch";
 
 export const metadata: Metadata = {
   title: 'Our Branches | Oasis Marine Trading LLC',
