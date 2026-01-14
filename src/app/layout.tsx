@@ -2,8 +2,8 @@ import { defaultMetadata, organizationSchema } from '../utils/seo';
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ConditionalNavbar from "../components/ConditionalNavbar";
-import ConditionalFooter from "@/components/ConditionalFooter";
+import Navbar from "../components/layouts/Navbar";
+import Footer from "@/components/layouts/Footer";
 import favicon from "./favicon.jpg";
 import Whatsapp from '@/components/Whatsapp';
 
@@ -45,10 +45,10 @@ export default function RootLayout({
         suppressContentEditableWarning={true}
         suppressHydrationWarning={true}
       >
-        <ConditionalNavbar />
+        <Navbar />
         <Whatsapp />
         {children}
-        <ConditionalFooter/>
+        <Footer/>
       </body>
     </html>
   );
