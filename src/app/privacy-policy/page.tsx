@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import Privacy from "@/components/Privacy";
+import Privacy from "../components/Privacy";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Oasis Marine Trading LLC",

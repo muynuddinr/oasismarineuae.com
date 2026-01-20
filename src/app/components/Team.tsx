@@ -1,12 +1,12 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { Video } from "lucide-react";
-import CEO from "../app/assets/ceo/ceo.png";
+import CEO from "../assets/ceo/ceo.png";
 import { motion, Variants } from "framer-motion";
 import Image from "next/image";
-import Banner from "../app/assets/banner/About Us.jpg";
-import Boat from "../app/assets/boat/boat.png";
-import About from "../app/assets/boat/About.png";
+import Banner from "../assets/banner/About Us.jpg";
+import Boat from "../assets/boat/boat.png";
+import About from "../assets/boat/About.png";
 
 const Team = () => {
   const [activeTab, setActiveTab] = useState("overview");

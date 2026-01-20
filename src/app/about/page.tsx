@@ -1,6 +1,6 @@
 
 import { Metadata } from "next";
-import Team from "../../components/Team";
+import Team from "../components/Team";
 
 export const metadata: Metadata = {
   title: 'About Us | Oasis Marine Trading LLC',

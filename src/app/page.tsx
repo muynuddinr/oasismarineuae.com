@@ -1,12 +1,12 @@
-import Banner from "../components/Banner";
-import MarineEquipmentPage from "../components/MarineEquipmentPage";
-import ProductsSection from "../components/Products";
-import WhyChooseUs from "../components/WhyChooseUs";
-import MarineSupplyPage from "../components/MarineSupplyPage";
-import FAQ from "../components/Faq";
-import Flipbook from "../components/Flipbook";
-import QHSEPolicySection from "../components/QHSEPolicySection";
-import Testimony from "../components/Testimony";
+import Banner from "./components/Banner";
+import MarineEquipmentPage from "./components/MarineEquipmentPage";
+import ProductsSection from "./components/Products";
+import WhyChooseUs from "./components/WhyChooseUs";
+import MarineSupplyPage from "./components/MarineSupplyPage";
+import FAQ from "./components/Faq";
+import Flipbook from "./components/Flipbook";
+import QHSEPolicySection from "./components/QHSEPolicySection";
+import Testimony from "./components/Testimony";
 export default function Home() {
   return (
     <div>

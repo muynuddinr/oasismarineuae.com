@@ -4,10 +4,13 @@ import { useRouter } from "next/navigation";
 import { useInView } from "react-intersection-observer";
 import { motion, Variants } from "framer-motion";
 import Image from "next/image";
-import Ram from "./Ram";
-import Sam from "./Sam";
 import RAms from "../../app/assets/branch/oasisstar-275x300.jpg";
+import SAms from "../../app/assets/branch/logo1.png";
+import TAms from "../../app/assets/branch/logo2.png";
+import UAms from "../../app/assets/branch/logo3.png";
+import VAms from "../../app/assets/branch/logo4.png";
 import Banner from "../../app/assets/banner/OurBranch.jpg";
+import { MapPin, Mail, Flag } from 'lucide-react';
 
 interface HistoryMilestone {
   year: number;
@@ -116,6 +119,35 @@ const Branch: React.FC = () => {
     threshold: 0.2,
     triggerOnce: true,
   });
+
+  // Refs for Ram component sections
+  const ramRef = React.useRef(null);
+  const ramInView = useInView(ramRef, { once: true, margin: "-100px" });
+  
+  // Refs for Sam component sections
+  const commitmentRef = React.useRef(null);
+  const productRef = React.useRef(null);
+  const contactRef = React.useRef(null);
+     
+  // Check if elements are in view
+  const commitmentInView = useInView(commitmentRef, { once: true, margin: "-100px" });
+  const productInView = useInView(productRef, { once: true, margin: "-100px" });
+  const contactInView = useInView(contactRef, { once: true, margin: "-100px" });
+
+  // Animation variants for Sam component
+  const contactItemVariants: Variants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  // Function to handle opening Google Maps
+  const openGoogleMaps = () => {
+    window.open('https://www.google.com/maps/place/Oasis+Marine+Trading+LLC/@25.286978,55.383382,6z/data=!4m6!3m5!1s0x3e5f5de30e5a6283:0x14805290c4c15df6!8m2!3d25.286978!4d55.3833818!16s%2Fg%2F11vlm3tdjq?hl=en&entry=ttu&g_ep=EgoyMDI1MDkwOS4wIKXMDSoASAFQAw%3D%3D', '_blank');
+  };
 
   React.useEffect(() => {
     const observer = new IntersectionObserver(
@@ -348,9 +380,183 @@ const Branch: React.FC = () => {
           </div>
         </div>
       </motion.section>
-      <Ram />
-      <Sam />
 
+      {/* Ram Component Content - Now integrated directly */}
+      <motion.section
+        ref={ramRef}
+        className="py-16 md:py-20 lg:py-24"
+        initial="hidden"
+        animate={ramInView ? "visible" : "hidden"}
+        variants={containerVariants}
+      >
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <motion.div variants={fadeInUp}>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
+              Expanded Reach Across the <span className='text-blue-900'>Middle East</span>
+            </h1>
+          </motion.div>
+          
+          <motion.div variants={fadeInUp}>
+            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+              Over the years, <span className='font-bold  text-blue-900'>OASIS STAR</span> has expanded its operations, serving not only the UAE but also various regions across the Middle East. Our strategic presence in key markets ensures that we can deliver a wide range of premium building materials to meet the needs of contractors, developers, and businesses in countries including Saudi Arabia, Qatar, Oman and beyond.
+            </p>
+          </motion.div>
+          
+          <hr className="border-gray-300 my-8" />
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {[
+              { src: SAms, alt: "Quality Building Materials", text: "Quality Building Materials" },
+              { src: TAms, alt: "Reliable Construction Supplies", text: "Reliable Construction Supplies" },
+              { src: VAms, alt: "Premium Building Solution", text: "Premium Building Solution" },
+              { src: UAms, alt: "Building the Future Together", text: "Building the Future Together" }
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                className="flex flex-col items-center text-center"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    width={80}
+                    height={80}
+                    className="mb-4"
+                  />
+                </motion.div>
+                <span className="text-gray-700 font-medium">{item.text}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Sam Component Content - Now integrated directly */}
+      <motion.section
+        className="bg-white py-16 px-8"
+        initial="hidden"
+        animate={commitmentInView || productInView || contactInView ? "visible" : "hidden"}
+        variants={containerVariants}
+      >
+        <div className="max-w-6xl mx-auto">
+          <motion.div 
+            className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-16"
+            variants={staggerContainer}
+          >
+            {/* Commitment to Customer Satisfaction */}
+            <motion.div 
+              ref={commitmentRef}
+              variants={fadeInUp}
+              className="space-y-6"
+            >
+              <h2 className="text-3xl text-black leading-tight">
+                Commitment to Customer<br />
+                <span className='text-blue-900'>Satisfaction</span>
+              </h2>
+              <p className="text-gray-600 leading-relaxed text-base">
+                We are deeply committed to providing the best customer experience. Our 
+                experienced team offers tailored solutions to meet specific project 
+                requirements, from small-scale developments to large-scale commercial and 
+                infrastructure projects. We understand the importance of timely delivery and 
+                cost-effective solutions, which is why we work closely with our clients to 
+                ensure that each order is processed efficiently and delivered on time.
+              </p>
+            </motion.div>
+
+            {/* Product Range */}
+            <motion.div 
+              ref={productRef}
+              variants={fadeInUp}
+              className="space-y-6"
+            >
+              <h2 className="text-3xl text-black leading-tight">
+                Product <span className='text-blue-900'>Range</span>
+              </h2>
+              <p className="text-gray-600 leading-relaxed text-base">
+                Our product portfolio includes a comprehensive range of building materials 
+                such as tools, cement, insulation materials, paints, sanitary ware, plumbing 
+                supplies, electrical fittings, and more. We source our products from trusted 
+                manufacturers, ensuring top-tier quality and compliance with international 
+                standards.
+              </p>
+            </motion.div>
+          </motion.div>
+
+          {/* Contact Information Section */}
+          <motion.div
+            ref={contactRef}
+            variants={fadeInUp}
+            className="bg-gradient-to-r from-blue-50 to-gray-50 rounded-2xl p-8 shadow-lg"
+          >
+            <div className="max-w-4xl mx-auto">
+              <motion.h2 
+                className="text-3xl text-center text-black mb-8 leading-tight"
+                variants={fadeInUp}
+              >
+                Get in <span className='text-blue-900'>Touch</span>
+              </motion.h2>
+              
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                variants={staggerContainer}
+              >
+                {/* Address - Now clickable */}
+                <motion.div 
+                  variants={contactItemVariants}
+                  className="flex items-start space-x-4 group cursor-pointer"
+                  onClick={openGoogleMaps}
+                >
+                  <div className="flex-shrink-0 w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center group-hover:bg-red-600 transition-colors duration-300">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-1">Address</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed group-hover:text-red-500 transition-colors duration-300">
+                      Al Nakheel Street, Deira, Dubai
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* P.O. Box */}
+                <motion.div 
+                  variants={contactItemVariants}
+                  className="flex items-start space-x-4 group"
+                >
+                  <div className="flex-shrink-0 w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center group-hover:bg-red-600 transition-colors duration-300">
+                    <Mail className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-1">P.O. Box</h3>
+                    <p className="text-gray-600 text-sm">
+                      182353
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* Country */}
+                <motion.div 
+                  variants={contactItemVariants}
+                  className="flex items-start space-x-4 group"
+                >
+                  <div className="flex-shrink-0 w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center group-hover:bg-red-600 transition-colors duration-300">
+                    <Flag className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 mb-1">Country</h3>
+                    <p className="text-gray-600 text-sm">
+                      United Arab Emirates
+                    </p>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </motion.section>
     </>
   );
 };
